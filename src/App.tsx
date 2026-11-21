@@ -10,7 +10,7 @@ import type { ChatMessage, Finding, HeaderCheck, ProjectFile, Severity, Snapshot
 
 import { scanProject, normalizePath } from "./engine/scanner";
 
-import { verifyFindings, chatWithGemini } from "./engine/gemini";
+import { verifyFindings, chatWithGemini, explainFinding } from "./engine/gemini";
 
 import { inspectHeaders, inspectEndpoint } from "./engine/headers";
 
@@ -93,6 +93,7 @@ function App(){
  const [generatedCode,setGeneratedCode]=useState("");
 
  const [chatBusy,setChatBusy]=useState(false);
+ const [explainBusy,setExplainBusy]=useState(false);
 
  const [authToken,setAuthToken]=useState(()=>sessionStorage.getItem("sentinel_token")||"");
 
@@ -277,12 +278,21 @@ function App(){
 
   setBusy(true);setBanner("Gemini is reviewing candidate findings…");
 
-  try{const results=await verifyFindings(findings,files);const map=new Map(results.map(r=>[r.id,r]));setFindings(old=>old.map(f=>({...f,...(map.get(f.id)||{})})));setBanner(`Gemini verification complete. ${results.filter(r=>r.isTruePositive).length} true positive(s) reported.`);}
+  try{const results=await verifyFindings(findings,files,authToken);const map=new Map(results.map(r=>[r.id,r]));setFindings(old=>old.map(f=>({...f,...(map.get(f.id)||{})})));setBanner(`Gemini verification complete. ${results.filter(r=>r.isTruePositive).length} true positive(s) reported.`);}
 
   catch(e){setBanner(String(e).includes("429")?"Gemini rate limit reached. Wait and retry.":`Gemini verification failed: ${String(e)}`)}
 
   finally{setBusy(false);}
 
+ }
+
+
+ async function explainSelectedFinding(){
+  if(!selected)return;
+  setExplainBusy(true);
+  try{const explanation=await explainFinding(selected,files,authToken);setFindings(old=>old.map(f=>f.id===selected.id?{...f,explanation}:f));setSelected(old=>old?{...old,explanation}:old);setBanner("AI explanation generated using the finding and source context.");}
+  catch(e){setBanner(`AI explanation failed: ${String(e)}`);}
+  finally{setExplainBusy(false);}
  }
 
  async function inspectRaw(){const checks=inspectHeaders(rawHeaders);setHeaderChecks(checks);setBanner(`Inspected headers: ${checks.filter(c=>!c.present).length} missing or insecure control(s).`);}
@@ -301,7 +311,7 @@ function App(){
 
   if(!currentFile||!text.trim())return;setChatBusy(true);setChatMessages(old=>[...old,{role:"user",text}]);setChatInput("");
 
-   try{const response=await chatWithGemini(currentFile,findings,chatMessages.filter(m=>m.role==="user"||m.role==="model").map(m=>({role:m.role,text:m.text})),text);const match=response.match(/```(?:[\w+-]+)?\s*\n([\s\S]*?)```/);setGeneratedCode(match?.[1]?.trimEnd()||"");setChatMessages(old=>[...old,{role:"model",text:response,code:match?.[1]?.trimEnd()}]);}
+   try{const response=await chatWithGemini(currentFile,findings,chatMessages.filter(m=>m.role==="user"||m.role==="model").map(m=>({role:m.role,text:m.text})),text,authToken);const match=response.match(/```(?:[\w+-]+)?\s*\n([\s\S]*?)```/);setGeneratedCode(match?.[1]?.trimEnd()||"");setChatMessages(old=>[...old,{role:"model",text:response,code:match?.[1]?.trimEnd()}]);}
 
   catch(e){setChatMessages(old=>[...old,{role:"model",text:`Gemini request failed: ${String(e)}. Check the local API key, model access, network, and quota.`}]);}
 
@@ -478,7 +488,7 @@ function App(){
 
      <div className="overflow-x-auto mt-4"><table className="w-full text-left text-xs"><thead className="text-[10px] uppercase tracking-wider text-slate-500 border-b border-slate-800"><tr><th className="py-3 pr-4">Severity</th><th className="py-3 pr-4">File : Line</th><th className="py-3 pr-4">Finding</th><th className="py-3 pr-4">Confidence</th><th className="py-3">Source</th></tr></thead><tbody className="divide-y divide-slate-800">{visibleFindings.map(f=><tr key={f.id} onClick={()=>setSelected(f)} className={`cursor-pointer hover:bg-slate-800/60 ${selected?.id===f.id?"bg-slate-800/50":""}`}><td className="py-3 pr-4"><span className={`badge sev-${f.severity}`}>{f.severity}</span></td><td className="py-3 pr-4"><button className="font-mono text-cyan-300 hover:text-cyan-200 text-left">{f.filePath} : Line {f.lineNumber}</button></td><td className="py-3 pr-4"><div className="text-slate-200">{f.title}</div><div className="text-[10px] text-slate-500 mt-1">{f.cweId||f.predictedCategory} {f.isTruePositive===false?"· Gemini marked false positive":""}</div></td><td className="py-3 pr-4 text-slate-300">{f.mlModelConfidence!==undefined?f.mlModelConfidence:f.mlConfidence}%<div className={`text-[10px] mt-1 ${f.mlPrediction==="Vulnerable"?"text-orange-300":f.mlPrediction==="Review Required"?"text-amber-300":f.mlPrediction==="Likely Safe"?"text-emerald-300":"text-slate-600"}`}>{f.mlPrediction||"Heuristic fallback (not trained)"}</div></td><td className="py-3 text-slate-500">{f.detectionSource}</td></tr>)}</tbody></table>{!visibleFindings.length&&<Empty text={emptyNote}/>}</div></div>
 
-     {selected&&<div className="panel p-5 grid xl:grid-cols-2 gap-5"><div><div className="flex items-center justify-between"><h2 className="font-semibold text-white text-sm">Code inspector</h2><span className={`badge sev-${selected.severity}`}>{selected.severity}</span></div><div className="mt-3 rounded-lg bg-slate-950 border border-slate-800 p-3 overflow-auto text-xs font-mono">{selected.codeSnippet.split("\n").map((line,i)=>{const num=Number(line.match(/^\d+:/)?.[0].replace(":",""));return <span key={i} className={`code-line ${num===selected.lineNumber?"active":""}`}>{line}</span>})}</div><div className="flex gap-3 mt-3 text-xs text-slate-400"><span>Trained ML score: <b className="text-cyan-300">{selected.mlModelConfidence!==undefined?`${selected.mlModelConfidence}%`:"Not connected"}</b></span><span>Prediction: <b className="text-slate-200">{selected.mlPrediction||"Not scored"}</b></span><span>Rule: {selected.ruleId}</span></div></div><div><h2 className="font-semibold text-white text-sm">Gemini analysis & remediation</h2><div className="mt-3 rounded-lg bg-slate-950 border border-slate-800 p-4 text-xs"><div className="flex gap-2 flex-wrap mb-3"><span className="badge bg-slate-800 text-slate-300">{selected.cweId||"CWE pending"}</span><span className="badge bg-slate-800 text-slate-300">{selected.owaspCategory||"OWASP pending"}</span><span className={`badge ${selected.isTruePositive===undefined?"bg-slate-800 text-slate-400":selected.isTruePositive?"bg-red-950 text-red-300":"bg-emerald-950 text-emerald-300"}`}>{selected.isTruePositive===undefined?"Not verified":selected.isTruePositive?"True positive":"False positive"}</span></div><p className="text-slate-300 leading-relaxed">{selected.explanation||"Run Gemini verification to obtain a contextual explanation and secure replacement for this candidate."}</p>{selected.fixedLineSnippet&&<div className="mt-4"><div className="text-[10px] uppercase text-emerald-400 mb-2">Suggested exact-line replacement</div><pre className="whitespace-pre-wrap text-emerald-200 bg-emerald-950/20 border border-emerald-900/50 rounded p-3">{selected.fixedLineSnippet}</pre></div>}<button className="btn mt-3" onClick={()=>{setActiveFile(selected.filePath);setTab("chat");}}><Sparkles size={13}/> Open full-file fixer</button></div></div></div>}
+     {selected&&<div className="panel p-5 grid xl:grid-cols-2 gap-5"><div><div className="flex items-center justify-between"><h2 className="font-semibold text-white text-sm">Code inspector</h2><span className={`badge sev-${selected.severity}`}>{selected.severity}</span></div><div className="mt-3 rounded-lg bg-slate-950 border border-slate-800 p-3 overflow-auto text-xs font-mono">{selected.codeSnippet.split("\n").map((line,i)=>{const num=Number(line.match(/^\d+:/)?.[0].replace(":",""));return <span key={i} className={`code-line ${num===selected.lineNumber?"active":""}`}>{line}</span>})}</div><div className="flex gap-3 mt-3 text-xs text-slate-400"><span>Trained ML score: <b className="text-cyan-300">{selected.mlModelConfidence!==undefined?`${selected.mlModelConfidence}%`:"Not connected"}</b></span><span>Prediction: <b className="text-slate-200">{selected.mlPrediction||"Not scored"}</b></span><span>Rule: {selected.ruleId}</span></div></div><div><div className="flex items-center justify-between"><h2 className="font-semibold text-white text-sm">AI explanation & remediation</h2><button className="btn btn-primary" onClick={()=>void explainSelectedFinding()} disabled={explainBusy}><Sparkles size={13}/>{explainBusy?"Explaining…":"Explain with AI"}</button></div><div className="mt-3 rounded-lg bg-slate-950 border border-slate-800 p-4 text-xs"><div className="flex gap-2 flex-wrap mb-3"><span className="badge bg-slate-800 text-slate-300">{selected.cweId||"CWE pending"}</span><span className="badge bg-slate-800 text-slate-300">{selected.owaspCategory||"OWASP pending"}</span><span className={`badge ${selected.isTruePositive===undefined?"bg-slate-800 text-slate-400":selected.isTruePositive?"bg-red-950 text-red-300":"bg-emerald-950 text-emerald-300"}`}>{selected.isTruePositive===undefined?"Not verified":selected.isTruePositive?"True positive":"False positive"}</span></div><p className="text-slate-300 leading-relaxed">{selected.explanation||"Run Gemini verification to obtain a contextual explanation and secure replacement for this candidate."}</p>{selected.fixedLineSnippet&&<div className="mt-4"><div className="text-[10px] uppercase text-emerald-400 mb-2">Suggested exact-line replacement</div><pre className="whitespace-pre-wrap text-emerald-200 bg-emerald-950/20 border border-emerald-900/50 rounded p-3">{selected.fixedLineSnippet}</pre></div>}<button className="btn mt-3" onClick={()=>{setActiveFile(selected.filePath);setTab("chat");}}><Sparkles size={13}/> Open full-file fixer</button></div></div></div>}
 
     </section>}
 
