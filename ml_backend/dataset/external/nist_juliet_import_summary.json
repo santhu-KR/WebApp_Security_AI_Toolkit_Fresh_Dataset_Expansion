@@ -1,0 +1,31 @@
+{
+  "source": "NIST SARD Juliet Java 1.3",
+  "source_url": "https://samate.nist.gov/SARD/test-suites/111",
+  "input_java_files": 46793,
+  "imported_method_snippets": 10924,
+  "safe": 5766,
+  "vulnerable": 5158,
+  "skipped_unmapped_cwe_files": 37285,
+  "skipped_files_without_extractable_label": 3250,
+  "category_label_counts": {
+    "Command Injection | safe": 260,
+    "Command Injection | vulnerable": 412,
+    "Cross-Site Scripting (XSS) | safe": 712,
+    "Cross-Site Scripting (XSS) | vulnerable": 1232,
+    "Hardcoded Secrets | safe": 204,
+    "Hardcoded Secrets | vulnerable": 148,
+    "Insecure Cookie | safe": 32,
+    "Insecure Cookie | vulnerable": 17,
+    "Insecure TLS Configuration | safe": 31,
+    "Insecure TLS Configuration | vulnerable": 34,
+    "Open Redirect | safe": 178,
+    "Open Redirect | vulnerable": 320,
+    "Path Traversal | safe": 527,
+    "Path Traversal | vulnerable": 848,
+    "SQL Injection | safe": 3732,
+    "SQL Injection | vulnerable": 2062,
+    "Weak Password Storage | safe": 90,
+    "Weak Password Storage | vulnerable": 85
+  },
+  "note": "Juliet is a curated static-analysis test suite. It contains synthetic test cases and is not equivalent to independent production repositories."
+}

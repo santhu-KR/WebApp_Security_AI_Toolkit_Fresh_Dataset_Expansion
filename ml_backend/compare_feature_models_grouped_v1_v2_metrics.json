@@ -1,0 +1,131 @@
+{
+  "dataset": "C:\\Users\\santh\\Downloads\\WebApp_Security_AI_Toolkit_Fresh_Dataset_Expansion\\WebApp_Security_AI_Toolkit_Fresh\\ml_backend\\dataset\\processed\\security_snippets_clean.csv",
+  "rows": 14496,
+  "safe_rows": 7511,
+  "vulnerable_rows": 6985,
+  "groups": 8754,
+  "cross_validation": "StratifiedGroupKFold",
+  "n_splits": 5,
+  "random_state": 42,
+  "grouping_strategy": "Juliet: source_id prefix before '::'; other sources: source + source_id, with source_row/index fallback.",
+  "models": {
+    "V1": {
+      "accuracy": 0.9638520971302428,
+      "precision": 0.9567368867524388,
+      "recall": 0.968790264853257,
+      "f1_score": 0.9627258500497937,
+      "confusion_matrix": [
+        [
+          7205,
+          306
+        ],
+        [
+          218,
+          6767
+        ]
+      ],
+      "classification_report": {
+        "safe": {
+          "precision": 0.9706318200188603,
+          "recall": 0.9592597523632006,
+          "f1-score": 0.9649122807017544,
+          "support": 7511.0
+        },
+        "vulnerable": {
+          "precision": 0.9567368867524388,
+          "recall": 0.968790264853257,
+          "f1-score": 0.9627258500497937,
+          "support": 6985.0
+        },
+        "accuracy": 0.9638520971302428,
+        "macro avg": {
+          "precision": 0.9636843533856496,
+          "recall": 0.9640250086082288,
+          "f1-score": 0.9638190653757741,
+          "support": 14496.0
+        },
+        "weighted avg": {
+          "precision": 0.963936448270381,
+          "recall": 0.9638520971302428,
+          "f1-score": 0.9638587336471225,
+          "support": 14496.0
+        }
+      }
+    },
+    "V2": {
+      "accuracy": 0.9613686534216336,
+      "precision": 0.9548350559252442,
+      "recall": 0.9654974946313529,
+      "f1_score": 0.9601366742596811,
+      "confusion_matrix": [
+        [
+          7192,
+          319
+        ],
+        [
+          241,
+          6744
+        ]
+      ],
+      "classification_report": {
+        "safe": {
+          "precision": 0.9675770213910938,
+          "recall": 0.9575289575289575,
+          "f1-score": 0.9625267665952891,
+          "support": 7511.0
+        },
+        "vulnerable": {
+          "precision": 0.9548350559252442,
+          "recall": 0.9654974946313529,
+          "f1-score": 0.9601366742596811,
+          "support": 6985.0
+        },
+        "accuracy": 0.9613686534216336,
+        "macro avg": {
+          "precision": 0.961206038658169,
+          "recall": 0.9615132260801552,
+          "f1-score": 0.9613317204274852,
+          "support": 14496.0
+        },
+        "weighted avg": {
+          "precision": 0.9614372153219051,
+          "recall": 0.9613686534216336,
+          "f1-score": 0.9613750837197219,
+          "support": 14496.0
+        }
+      }
+    }
+  },
+  "comparison": [
+    {
+      "Metric": "Accuracy",
+      "V1": 0.963852,
+      "V2": 0.961369,
+      "Difference (V2 - V1)": -0.002483
+    },
+    {
+      "Metric": "Precision",
+      "V1": 0.956737,
+      "V2": 0.954835,
+      "Difference (V2 - V1)": -0.001902
+    },
+    {
+      "Metric": "Recall",
+      "V1": 0.96879,
+      "V2": 0.965497,
+      "Difference (V2 - V1)": -0.003293
+    },
+    {
+      "Metric": "F1-score",
+      "V1": 0.962726,
+      "V2": 0.960137,
+      "Difference (V2 - V1)": -0.002589
+    }
+  ],
+  "limitations": [
+    "Rows sharing the derived group_id are kept in one fold.",
+    "This does not guarantee separation of similar templates across different IDs.",
+    "CWE categories are not used as groups in this experiment.",
+    "Benchmark performance does not establish production-app performance."
+  ]
+}

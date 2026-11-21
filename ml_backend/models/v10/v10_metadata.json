@@ -1,0 +1,16 @@
+{
+    "version": "V10",
+    "model_name": "ExtraTrees",
+    "threshold": 0.5599999999999999,
+    "accuracy": 0.9727586206896551,
+    "precision": 0.9838472834067548,
+    "recall": 0.9591982820329277,
+    "f1_score": 0.9713664371148967,
+    "roc_auc": 0.9975246357678343,
+    "training_samples": 2010,
+    "testing_samples": 2900,
+    "engineered_features": 72,
+    "combined_features": 25072,
+    "false_positives": 22,
+    "false_negatives": 57
+}

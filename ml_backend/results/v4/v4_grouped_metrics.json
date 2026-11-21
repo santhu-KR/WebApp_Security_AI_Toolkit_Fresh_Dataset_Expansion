@@ -1,0 +1,141 @@
+{
+    "model_version": "V4",
+    "evaluation_method": "StratifiedGroupKFold",
+    "number_of_folds": 5,
+    "grouping_column": "cwe",
+    "random_state": 42,
+    "dataset_path": "C:\\Users\\santh\\Downloads\\WebApp_Security_AI_Toolkit_Fresh_Dataset_Expansion\\WebApp_Security_AI_Toolkit_Fresh\\ml_backend\\dataset\\processed\\security_snippets_clean.csv",
+    "total_samples": 14496,
+    "safe_samples": 7511,
+    "vulnerable_samples": 6985,
+    "number_of_cwe_groups": 22,
+    "overall_metrics": {
+        "accuracy": 0.6931567328918322,
+        "precision": 0.625531914893617,
+        "recall": 0.9049391553328561,
+        "f1_score": 0.7397308367466354
+    },
+    "fold_average_metrics": {
+        "accuracy": 0.7908136268394321,
+        "precision": 0.790496057927249,
+        "recall": 0.8155901879929658,
+        "f1_score": 0.7664443988074844
+    },
+    "confusion_matrix": [
+        [
+            3727,
+            3784
+        ],
+        [
+            664,
+            6321
+        ]
+    ],
+    "fold_results": [
+        {
+            "fold": 1,
+            "accuracy": 0.9491525423728814,
+            "precision": 0.9,
+            "recall": 1.0,
+            "f1_score": 0.9473684210526315,
+            "confusion_matrix": [
+                [
+                    29,
+                    3
+                ],
+                [
+                    0,
+                    27
+                ]
+            ],
+            "training_samples": 14437,
+            "testing_samples": 59,
+            "training_cwe_groups": 21,
+            "testing_cwe_groups": 1
+        },
+        {
+            "fold": 2,
+            "accuracy": 0.5521008403361345,
+            "precision": 0.6485148514851485,
+            "recall": 0.2209106239460371,
+            "f1_score": 0.32955974842767294,
+            "confusion_matrix": [
+                [
+                    526,
+                    71
+                ],
+                [
+                    462,
+                    131
+                ]
+            ],
+            "training_samples": 13306,
+            "testing_samples": 1190,
+            "training_cwe_groups": 19,
+            "testing_cwe_groups": 3
+        },
+        {
+            "fold": 3,
+            "accuracy": 0.9456464379947229,
+            "precision": 0.968421052631579,
+            "recall": 0.9353049907578558,
+            "f1_score": 0.9515749882463563,
+            "confusion_matrix": [
+                [
+                    780,
+                    33
+                ],
+                [
+                    70,
+                    1012
+                ]
+            ],
+            "training_samples": 12601,
+            "testing_samples": 1895,
+            "training_cwe_groups": 17,
+            "testing_cwe_groups": 5
+        },
+        {
+            "fold": 4,
+            "accuracy": 0.5995982591228658,
+            "precision": 0.5167730544614967,
+            "recall": 0.9921773142112125,
+            "f1_score": 0.6795856402929095,
+            "confusion_matrix": [
+                [
+                    1568,
+                    3558
+                ],
+                [
+                    30,
+                    3805
+                ]
+            ],
+            "training_samples": 5535,
+            "testing_samples": 8961,
+            "training_cwe_groups": 15,
+            "testing_cwe_groups": 7
+        },
+        {
+            "fold": 5,
+            "accuracy": 0.9075700543705563,
+            "precision": 0.9187713310580204,
+            "recall": 0.9295580110497238,
+            "f1_score": 0.924133196017851,
+            "confusion_matrix": [
+                [
+                    824,
+                    119
+                ],
+                [
+                    102,
+                    1346
+                ]
+            ],
+            "training_samples": 12105,
+            "testing_samples": 2391,
+            "training_cwe_groups": 16,
+            "testing_cwe_groups": 6
+        }
+    ]
+}

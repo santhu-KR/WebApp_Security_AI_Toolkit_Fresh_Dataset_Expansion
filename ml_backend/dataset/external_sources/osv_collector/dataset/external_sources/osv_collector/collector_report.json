@@ -1,0 +1,24 @@
+{
+  "generated_at": "2026-11-20T05:08:36.819756+00:00",
+  "source": "OSV",
+  "api": "https://api.osv.dev/v1/query",
+  "status": "initialized",
+  "queries": [
+    "SQL Injection",
+    "Cross-site Scripting",
+    "Path Traversal",
+    "Command Injection",
+    "Server-side Request Forgery",
+    "Insecure Deserialization",
+    "Improper Access Control",
+    "Authentication Bypass"
+  ],
+  "records_collected": 0,
+  "errors": [],
+  "limitations": [
+    "OSV query endpoint requires package/version or commit queries.",
+    "Keyword-based vulnerability category search is not supported by this endpoint.",
+    "Collected metadata must be independently verified.",
+    "Source code and patch evidence are required before dataset inclusion."
+  ]
+}

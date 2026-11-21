@@ -1,0 +1,25 @@
+{
+  "generated_at": "2026-11-20T05:16:31.516794+00:00",
+  "source": "OSV",
+  "api": "https://api.osv.dev/v1/query",
+  "status": "completed",
+  "ecosystems": [
+    "PyPI",
+    "npm",
+    "Maven",
+    "Go"
+  ],
+  "packages_queried": 14,
+  "records_collected": 893,
+  "unique_records": 893,
+  "errors_count": 0,
+  "errors": [],
+  "verification_status": "UNVERIFIED_METADATA",
+  "limitations": [
+    "Records contain vulnerability metadata only.",
+    "Source code has not been downloaded or verified.",
+    "Vulnerable and patched code pairs are not included automatically.",
+    "OSV vulnerability metadata must be independently checked.",
+    "Records must not be directly added to the training dataset without validation."
+  ]
+}

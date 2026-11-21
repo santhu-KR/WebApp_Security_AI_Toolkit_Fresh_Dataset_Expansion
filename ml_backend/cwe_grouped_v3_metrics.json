@@ -1,0 +1,940 @@
+{
+  "evaluation": "5-fold StratifiedGroupKFold grouped by normalized CWE identifier",
+  "purpose": "Measure performance on CWE identifiers absent from the corresponding training fold",
+  "model": "Character TF-IDF + engineered security indicators + Logistic Regression",
+  "dataset_file": "security_snippets_clean.csv",
+  "random_state": 42,
+  "folds": 5,
+  "rows_before_filtering": 14496,
+  "rows_used": 13664,
+  "rows_excluded_missing_cwe_or_blank_code": 832,
+  "distinct_cwe_groups": 21,
+  "source_counts": {
+    "NIST-SARD-Juliet-Java-1.3": 10924,
+    "OWASP-Benchmark-Java": 2740
+  },
+  "overall_out_of_fold": {
+    "rows": 13664,
+    "safe": 7091,
+    "vulnerable": 6573,
+    "predicted_safe": 4090,
+    "predicted_vulnerable": 9574,
+    "accuracy": 0.7368,
+    "precision": 0.6554,
+    "recall": 0.9547,
+    "f1": 0.7772,
+    "confusion_matrix_labels": [
+      "safe",
+      "vulnerable"
+    ],
+    "confusion_matrix": [
+      [
+        3792,
+        3299
+      ],
+      [
+        298,
+        6275
+      ]
+    ],
+    "classification_report": {
+      "safe": {
+        "precision": 0.9271393643031784,
+        "recall": 0.5347623748413481,
+        "f1-score": 0.6782935336731956,
+        "support": 7091.0
+      },
+      "vulnerable": {
+        "precision": 0.6554209316899937,
+        "recall": 0.9546630153658907,
+        "f1-score": 0.7772341611444851,
+        "support": 6573.0
+      },
+      "accuracy": 0.736753512880562,
+      "macro avg": {
+        "precision": 0.7912801479965861,
+        "recall": 0.7447126951036194,
+        "f1-score": 0.7277638474088404,
+        "support": 13664.0
+      },
+      "weighted avg": {
+        "precision": 0.7964305486147663,
+        "recall": 0.736753512880562,
+        "f1-score": 0.7258884359250095,
+        "support": 13664.0
+      }
+    }
+  },
+  "fold_results": [
+    {
+      "fold": 1,
+      "train_rows": 7366,
+      "test_rows": 6298,
+      "train_cwe_groups": 20,
+      "test_cwe_groups": 1,
+      "cwe_group_overlap": 0,
+      "held_out_cwe_groups": [
+        "CWE-89"
+      ],
+      "overall": {
+        "rows": 6298,
+        "safe": 3964,
+        "vulnerable": 2334,
+        "predicted_safe": 1126,
+        "predicted_vulnerable": 5172,
+        "accuracy": 0.5494,
+        "precision": 0.4513,
+        "recall": 1.0,
+        "f1": 0.6219,
+        "confusion_matrix_labels": [
+          "safe",
+          "vulnerable"
+        ],
+        "confusion_matrix": [
+          [
+            1126,
+            2838
+          ],
+          [
+            0,
+            2334
+          ]
+        ],
+        "classification_report": {
+          "safe": {
+            "precision": 1.0,
+            "recall": 0.2840565085771948,
+            "f1-score": 0.44243614931237724,
+            "support": 3964.0
+          },
+          "vulnerable": {
+            "precision": 0.45127610208816704,
+            "recall": 1.0,
+            "f1-score": 0.6219024780175859,
+            "support": 2334.0
+          },
+          "accuracy": 0.5493807557954906,
+          "macro avg": {
+            "precision": 0.7256380510440835,
+            "recall": 0.6420282542885973,
+            "f1-score": 0.5321693136649815,
+            "support": 6298.0
+          },
+          "weighted avg": {
+            "precision": 0.7966463039494731,
+            "recall": 0.5493807557954906,
+            "f1-score": 0.508945265094841,
+            "support": 6298.0
+          }
+        }
+      },
+      "per_source": {
+        "NIST-SARD-Juliet-Java-1.3": {
+          "rows": 5794,
+          "safe": 3732,
+          "vulnerable": 2062,
+          "predicted_safe": 1099,
+          "predicted_vulnerable": 4695,
+          "accuracy": 0.5456,
+          "precision": 0.4392,
+          "recall": 1.0,
+          "f1": 0.6103,
+          "confusion_matrix_labels": [
+            "safe",
+            "vulnerable"
+          ],
+          "confusion_matrix": [
+            [
+              1099,
+              2633
+            ],
+            [
+              0,
+              2062
+            ]
+          ],
+          "classification_report": {
+            "safe": {
+              "precision": 1.0,
+              "recall": 0.2944801714898178,
+              "f1-score": 0.4549782653694887,
+              "support": 3732.0
+            },
+            "vulnerable": {
+              "precision": 0.43919062832800854,
+              "recall": 1.0,
+              "f1-score": 0.6103300281189877,
+              "support": 2062.0
+            },
+            "accuracy": 0.5455643769416638,
+            "macro avg": {
+              "precision": 0.7195953141640042,
+              "recall": 0.6472400857449089,
+              "f1-score": 0.5326541467442383,
+              "support": 5794.0
+            },
+            "weighted avg": {
+              "precision": 0.8004161331743793,
+              "recall": 0.5455643769416638,
+              "f1-score": 0.510265689392524,
+              "support": 5794.0
+            }
+          }
+        },
+        "OWASP-Benchmark-Java": {
+          "rows": 504,
+          "safe": 232,
+          "vulnerable": 272,
+          "predicted_safe": 27,
+          "predicted_vulnerable": 477,
+          "accuracy": 0.5933,
+          "precision": 0.5702,
+          "recall": 1.0,
+          "f1": 0.7263,
+          "confusion_matrix_labels": [
+            "safe",
+            "vulnerable"
+          ],
+          "confusion_matrix": [
+            [
+              27,
+              205
+            ],
+            [
+              0,
+              272
+            ]
+          ],
+          "classification_report": {
+            "safe": {
+              "precision": 1.0,
+              "recall": 0.11637931034482758,
+              "f1-score": 0.2084942084942085,
+              "support": 232.0
+            },
+            "vulnerable": {
+              "precision": 0.570230607966457,
+              "recall": 1.0,
+              "f1-score": 0.7263017356475301,
+              "support": 272.0
+            },
+            "accuracy": 0.5932539682539683,
+            "macro avg": {
+              "precision": 0.7851153039832285,
+              "recall": 0.5581896551724138,
+              "f1-score": 0.4673979720708693,
+              "support": 504.0
+            },
+            "weighted avg": {
+              "precision": 0.7680609630295164,
+              "recall": 0.5932539682539683,
+              "f1-score": 0.4879458898150487,
+              "support": 504.0
+            }
+          }
+        }
+      }
+    },
+    {
+      "fold": 2,
+      "train_rows": 12845,
+      "test_rows": 819,
+      "train_cwe_groups": 18,
+      "test_cwe_groups": 3,
+      "cwe_group_overlap": 0,
+      "held_out_cwe_groups": [
+        "CWE-259",
+        "CWE-601",
+        "CWE-90"
+      ],
+      "overall": {
+        "rows": 819,
+        "safe": 362,
+        "vulnerable": 457,
+        "predicted_safe": 360,
+        "predicted_vulnerable": 459,
+        "accuracy": 0.9902,
+        "precision": 0.9891,
+        "recall": 0.9934,
+        "f1": 0.9913,
+        "confusion_matrix_labels": [
+          "safe",
+          "vulnerable"
+        ],
+        "confusion_matrix": [
+          [
+            357,
+            5
+          ],
+          [
+            3,
+            454
+          ]
+        ],
+        "classification_report": {
+          "safe": {
+            "precision": 0.9916666666666667,
+            "recall": 0.9861878453038674,
+            "f1-score": 0.9889196675900277,
+            "support": 362.0
+          },
+          "vulnerable": {
+            "precision": 0.9891067538126361,
+            "recall": 0.9934354485776805,
+            "f1-score": 0.9912663755458515,
+            "support": 457.0
+          },
+          "accuracy": 0.9902319902319903,
+          "macro avg": {
+            "precision": 0.9903867102396514,
+            "recall": 0.989811646940774,
+            "f1-score": 0.9900930215679395,
+            "support": 819.0
+          },
+          "weighted avg": {
+            "precision": 0.9902382415454312,
+            "recall": 0.9902319902319903,
+            "f1-score": 0.9902291248987107,
+            "support": 819.0
+          }
+        }
+      },
+      "per_source": {
+        "NIST-SARD-Juliet-Java-1.3": {
+          "rows": 760,
+          "safe": 330,
+          "vulnerable": 430,
+          "predicted_safe": 332,
+          "predicted_vulnerable": 428,
+          "accuracy": 0.9974,
+          "precision": 1.0,
+          "recall": 0.9953,
+          "f1": 0.9977,
+          "confusion_matrix_labels": [
+            "safe",
+            "vulnerable"
+          ],
+          "confusion_matrix": [
+            [
+              330,
+              0
+            ],
+            [
+              2,
+              428
+            ]
+          ],
+          "classification_report": {
+            "safe": {
+              "precision": 0.9939759036144579,
+              "recall": 1.0,
+              "f1-score": 0.9969788519637462,
+              "support": 330.0
+            },
+            "vulnerable": {
+              "precision": 1.0,
+              "recall": 0.9953488372093023,
+              "f1-score": 0.9976689976689976,
+              "support": 430.0
+            },
+            "accuracy": 0.9973684210526316,
+            "macro avg": {
+              "precision": 0.9969879518072289,
+              "recall": 0.9976744186046511,
+              "f1-score": 0.9973239248163719,
+              "support": 760.0
+            },
+            "weighted avg": {
+              "precision": 0.9973842739378567,
+              "recall": 0.9973684210526316,
+              "f1-score": 0.9973693291390858,
+              "support": 760.0
+            }
+          }
+        },
+        "OWASP-Benchmark-Java": {
+          "rows": 59,
+          "safe": 32,
+          "vulnerable": 27,
+          "predicted_safe": 28,
+          "predicted_vulnerable": 31,
+          "accuracy": 0.8983,
+          "precision": 0.8387,
+          "recall": 0.963,
+          "f1": 0.8966,
+          "confusion_matrix_labels": [
+            "safe",
+            "vulnerable"
+          ],
+          "confusion_matrix": [
+            [
+              27,
+              5
+            ],
+            [
+              1,
+              26
+            ]
+          ],
+          "classification_report": {
+            "safe": {
+              "precision": 0.9642857142857143,
+              "recall": 0.84375,
+              "f1-score": 0.9,
+              "support": 32.0
+            },
+            "vulnerable": {
+              "precision": 0.8387096774193549,
+              "recall": 0.9629629629629629,
+              "f1-score": 0.896551724137931,
+              "support": 27.0
+            },
+            "accuracy": 0.8983050847457628,
+            "macro avg": {
+              "precision": 0.9014976958525346,
+              "recall": 0.9033564814814814,
+              "f1-score": 0.8982758620689655,
+              "support": 59.0
+            },
+            "weighted avg": {
+              "precision": 0.906818714363821,
+              "recall": 0.8983050847457628,
+              "f1-score": 0.8984219754529515,
+              "support": 59.0
+            }
+          }
+        }
+      }
+    },
+    {
+      "fold": 3,
+      "train_rows": 11913,
+      "test_rows": 1751,
+      "train_cwe_groups": 17,
+      "test_cwe_groups": 4,
+      "cwe_group_overlap": 0,
+      "held_out_cwe_groups": [
+        "CWE-23",
+        "CWE-321",
+        "CWE-643",
+        "CWE-78"
+      ],
+      "overall": {
+        "rows": 1751,
+        "safe": 724,
+        "vulnerable": 1027,
+        "predicted_safe": 764,
+        "predicted_vulnerable": 987,
+        "accuracy": 0.9772,
+        "precision": 1.0,
+        "recall": 0.9611,
+        "f1": 0.9801,
+        "confusion_matrix_labels": [
+          "safe",
+          "vulnerable"
+        ],
+        "confusion_matrix": [
+          [
+            724,
+            0
+          ],
+          [
+            40,
+            987
+          ]
+        ],
+        "classification_report": {
+          "safe": {
+            "precision": 0.9476439790575916,
+            "recall": 1.0,
+            "f1-score": 0.9731182795698925,
+            "support": 724.0
+          },
+          "vulnerable": {
+            "precision": 1.0,
+            "recall": 0.9610516066212269,
+            "f1-score": 0.9801390268123138,
+            "support": 1027.0
+          },
+          "accuracy": 0.9771559109080525,
+          "macro avg": {
+            "precision": 0.9738219895287958,
+            "recall": 0.9805258033106135,
+            "f1-score": 0.9766286531911031,
+            "support": 1751.0
+          },
+          "weighted avg": {
+            "precision": 0.9783519365149608,
+            "recall": 0.9771559109080525,
+            "f1-score": 0.9772361021958016,
+            "support": 1751.0
+          }
+        }
+      },
+      "per_source": {
+        "NIST-SARD-Juliet-Java-1.3": {
+          "rows": 1465,
+          "safe": 579,
+          "vulnerable": 886,
+          "predicted_safe": 579,
+          "predicted_vulnerable": 886,
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "confusion_matrix_labels": [
+            "safe",
+            "vulnerable"
+          ],
+          "confusion_matrix": [
+            [
+              579,
+              0
+            ],
+            [
+              0,
+              886
+            ]
+          ],
+          "classification_report": {
+            "safe": {
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1-score": 1.0,
+              "support": 579.0
+            },
+            "vulnerable": {
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1-score": 1.0,
+              "support": 886.0
+            },
+            "accuracy": 1.0,
+            "macro avg": {
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1-score": 1.0,
+              "support": 1465.0
+            },
+            "weighted avg": {
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1-score": 1.0,
+              "support": 1465.0
+            }
+          }
+        },
+        "OWASP-Benchmark-Java": {
+          "rows": 286,
+          "safe": 145,
+          "vulnerable": 141,
+          "predicted_safe": 185,
+          "predicted_vulnerable": 101,
+          "accuracy": 0.8601,
+          "precision": 1.0,
+          "recall": 0.7163,
+          "f1": 0.8347,
+          "confusion_matrix_labels": [
+            "safe",
+            "vulnerable"
+          ],
+          "confusion_matrix": [
+            [
+              145,
+              0
+            ],
+            [
+              40,
+              101
+            ]
+          ],
+          "classification_report": {
+            "safe": {
+              "precision": 0.7837837837837838,
+              "recall": 1.0,
+              "f1-score": 0.8787878787878788,
+              "support": 145.0
+            },
+            "vulnerable": {
+              "precision": 1.0,
+              "recall": 0.7163120567375887,
+              "f1-score": 0.8347107438016529,
+              "support": 141.0
+            },
+            "accuracy": 0.8601398601398601,
+            "macro avg": {
+              "precision": 0.8918918918918919,
+              "recall": 0.8581560283687943,
+              "f1-score": 0.8567493112947658,
+              "support": 286.0
+            },
+            "weighted avg": {
+              "precision": 0.8903798903798904,
+              "recall": 0.8601398601398601,
+              "f1-score": 0.8570575430079562,
+              "support": 286.0
+            }
+          }
+        }
+      }
+    },
+    {
+      "fold": 4,
+      "train_rows": 11871,
+      "test_rows": 1793,
+      "train_cwe_groups": 15,
+      "test_cwe_groups": 6,
+      "cwe_group_overlap": 0,
+      "held_out_cwe_groups": [
+        "CWE-22",
+        "CWE-327",
+        "CWE-501",
+        "CWE-614",
+        "CWE-81",
+        "CWE-83"
+      ],
+      "overall": {
+        "rows": 1793,
+        "safe": 744,
+        "vulnerable": 1049,
+        "predicted_safe": 836,
+        "predicted_vulnerable": 957,
+        "accuracy": 0.8762,
+        "precision": 0.9321,
+        "recall": 0.8503,
+        "f1": 0.8893,
+        "confusion_matrix_labels": [
+          "safe",
+          "vulnerable"
+        ],
+        "confusion_matrix": [
+          [
+            679,
+            65
+          ],
+          [
+            157,
+            892
+          ]
+        ],
+        "classification_report": {
+          "safe": {
+            "precision": 0.812200956937799,
+            "recall": 0.9126344086021505,
+            "f1-score": 0.859493670886076,
+            "support": 744.0
+          },
+          "vulnerable": {
+            "precision": 0.9320794148380356,
+            "recall": 0.8503336510962822,
+            "f1-score": 0.8893320039880359,
+            "support": 1049.0
+          },
+          "accuracy": 0.8761851645287229,
+          "macro avg": {
+            "precision": 0.8721401858879173,
+            "recall": 0.8814840298492164,
+            "f1-score": 0.8744128374370559,
+            "support": 1793.0
+          },
+          "weighted avg": {
+            "precision": 0.8823362064287907,
+            "recall": 0.8761851645287229,
+            "f1-score": 0.8769506766997713,
+            "support": 1793.0
+          }
+        }
+      },
+      "per_source": {
+        "NIST-SARD-Juliet-Java-1.3": {
+          "rows": 1086,
+          "safe": 419,
+          "vulnerable": 667,
+          "predicted_safe": 450,
+          "predicted_vulnerable": 636,
+          "accuracy": 0.9715,
+          "precision": 1.0,
+          "recall": 0.9535,
+          "f1": 0.9762,
+          "confusion_matrix_labels": [
+            "safe",
+            "vulnerable"
+          ],
+          "confusion_matrix": [
+            [
+              419,
+              0
+            ],
+            [
+              31,
+              636
+            ]
+          ],
+          "classification_report": {
+            "safe": {
+              "precision": 0.9311111111111111,
+              "recall": 1.0,
+              "f1-score": 0.9643268124280783,
+              "support": 419.0
+            },
+            "vulnerable": {
+              "precision": 1.0,
+              "recall": 0.9535232383808095,
+              "f1-score": 0.9762087490406753,
+              "support": 667.0
+            },
+            "accuracy": 0.9714548802946593,
+            "macro avg": {
+              "precision": 0.9655555555555555,
+              "recall": 0.9767616191904047,
+              "f1-score": 0.9702677807343768,
+              "support": 1086.0
+            },
+            "weighted avg": {
+              "precision": 0.9734213218743606,
+              "recall": 0.9714548802946593,
+              "f1-score": 0.9716244659461283,
+              "support": 1086.0
+            }
+          }
+        },
+        "OWASP-Benchmark-Java": {
+          "rows": 707,
+          "safe": 325,
+          "vulnerable": 382,
+          "predicted_safe": 386,
+          "predicted_vulnerable": 321,
+          "accuracy": 0.7298,
+          "precision": 0.7975,
+          "recall": 0.6702,
+          "f1": 0.7283,
+          "confusion_matrix_labels": [
+            "safe",
+            "vulnerable"
+          ],
+          "confusion_matrix": [
+            [
+              260,
+              65
+            ],
+            [
+              126,
+              256
+            ]
+          ],
+          "classification_report": {
+            "safe": {
+              "precision": 0.6735751295336787,
+              "recall": 0.8,
+              "f1-score": 0.7313642756680732,
+              "support": 325.0
+            },
+            "vulnerable": {
+              "precision": 0.7975077881619937,
+              "recall": 0.6701570680628273,
+              "f1-score": 0.7283072546230441,
+              "support": 382.0
+            },
+            "accuracy": 0.7298444130127298,
+            "macro avg": {
+              "precision": 0.7355414588478362,
+              "recall": 0.7350785340314137,
+              "f1-score": 0.7298357651455587,
+              "support": 707.0
+            },
+            "weighted avg": {
+              "precision": 0.7405373298109295,
+              "recall": 0.7298444130127298,
+              "f1-score": 0.7297125330383687,
+              "support": 707.0
+            }
+          }
+        }
+      }
+    },
+    {
+      "fold": 5,
+      "train_rows": 10661,
+      "test_rows": 3003,
+      "train_cwe_groups": 14,
+      "test_cwe_groups": 7,
+      "cwe_group_overlap": 0,
+      "held_out_cwe_groups": [
+        "CWE-328",
+        "CWE-330",
+        "CWE-36",
+        "CWE-759",
+        "CWE-760",
+        "CWE-79",
+        "CWE-80"
+      ],
+      "overall": {
+        "rows": 3003,
+        "safe": 1297,
+        "vulnerable": 1706,
+        "predicted_safe": 1004,
+        "predicted_vulnerable": 1999,
+        "accuracy": 0.8372,
+        "precision": 0.8044,
+        "recall": 0.9426,
+        "f1": 0.868,
+        "confusion_matrix_labels": [
+          "safe",
+          "vulnerable"
+        ],
+        "confusion_matrix": [
+          [
+            906,
+            391
+          ],
+          [
+            98,
+            1608
+          ]
+        ],
+        "classification_report": {
+          "safe": {
+            "precision": 0.9023904382470119,
+            "recall": 0.6985350809560524,
+            "f1-score": 0.78748370273794,
+            "support": 1297.0
+          },
+          "vulnerable": {
+            "precision": 0.8044022011005503,
+            "recall": 0.9425556858147714,
+            "f1-score": 0.8680161943319838,
+            "support": 1706.0
+          },
+          "accuracy": 0.8371628371628371,
+          "macro avg": {
+            "precision": 0.853396319673781,
+            "recall": 0.8205453833854119,
+            "f1-score": 0.827749948534962,
+            "support": 3003.0
+          },
+          "weighted avg": {
+            "precision": 0.8467234610336042,
+            "recall": 0.8371628371628371,
+            "f1-score": 0.8332340958979263,
+            "support": 3003.0
+          }
+        }
+      },
+      "per_source": {
+        "NIST-SARD-Juliet-Java-1.3": {
+          "rows": 1819,
+          "safe": 706,
+          "vulnerable": 1113,
+          "predicted_safe": 721,
+          "predicted_vulnerable": 1098,
+          "accuracy": 0.9918,
+          "precision": 1.0,
+          "recall": 0.9865,
+          "f1": 0.9932,
+          "confusion_matrix_labels": [
+            "safe",
+            "vulnerable"
+          ],
+          "confusion_matrix": [
+            [
+              706,
+              0
+            ],
+            [
+              15,
+              1098
+            ]
+          ],
+          "classification_report": {
+            "safe": {
+              "precision": 0.9791955617198336,
+              "recall": 1.0,
+              "f1-score": 0.9894884372810091,
+              "support": 706.0
+            },
+            "vulnerable": {
+              "precision": 1.0,
+              "recall": 0.9865229110512129,
+              "f1-score": 0.9932157394843962,
+              "support": 1113.0
+            },
+            "accuracy": 0.9917537108301264,
+            "macro avg": {
+              "precision": 0.9895977808599168,
+              "recall": 0.9932614555256065,
+              "f1-score": 0.9913520883827027,
+              "support": 1819.0
+            },
+            "weighted avg": {
+              "precision": 0.9919252702442015,
+              "recall": 0.9917537108301264,
+              "f1-score": 0.9917690790360227,
+              "support": 1819.0
+            }
+          }
+        },
+        "OWASP-Benchmark-Java": {
+          "rows": 1184,
+          "safe": 591,
+          "vulnerable": 593,
+          "predicted_safe": 283,
+          "predicted_vulnerable": 901,
+          "accuracy": 0.5997,
+          "precision": 0.566,
+          "recall": 0.86,
+          "f1": 0.6827,
+          "confusion_matrix_labels": [
+            "safe",
+            "vulnerable"
+          ],
+          "confusion_matrix": [
+            [
+              200,
+              391
+            ],
+            [
+              83,
+              510
+            ]
+          ],
+          "classification_report": {
+            "safe": {
+              "precision": 0.7067137809187279,
+              "recall": 0.338409475465313,
+              "f1-score": 0.4576659038901602,
+              "support": 591.0
+            },
+            "vulnerable": {
+              "precision": 0.5660377358490566,
+              "recall": 0.8600337268128162,
+              "f1-score": 0.6827309236947792,
+              "support": 593.0
+            },
+            "accuracy": 0.5996621621621622,
+            "macro avg": {
+              "precision": 0.6363757583838923,
+              "recall": 0.5992216011390646,
+              "f1-score": 0.5701984137924697,
+              "support": 1184.0
+            },
+            "weighted avg": {
+              "precision": 0.6362569441566375,
+              "recall": 0.5996621621621622,
+              "f1-score": 0.5703885024916291,
+              "support": 1184.0
+            }
+          }
+        }
+      }
+    }
+  ],
+  "total_cwe_group_overlap": 0,
+  "predictions_file": "cwe_grouped_v3_predictions.csv",
+  "warnings": [
+    "CWE identifiers are used as groups; all rows sharing a normalized CWE stay in one fold.",
+    "This is stricter than a random row split but does not guarantee independence from shared code templates or related CWE families.",
+    "Rows without a recognizable CWE or with blank code are excluded and counted.",
+    "The evaluation does not train or save a deployment model.",
+    "Results are benchmark estimates, not production detection guarantees."
+  ]
+}

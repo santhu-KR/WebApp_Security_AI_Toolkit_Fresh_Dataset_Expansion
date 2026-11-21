@@ -1,0 +1,16 @@
+{
+    "total_records": 893,
+    "original_missing_summaries": 253,
+    "records_matched_using_identifiers": 252,
+    "descriptions_recovered": 252,
+    "recovery_percentage": 99.6,
+    "records_still_missing_descriptions": 1,
+    "unmatched_records": 1,
+    "final_missing_descriptions": 1,
+    "description_sources": {
+        "OSV Summary": 640,
+        "OSV Details": 252,
+        "Unmatched": 1
+    },
+    "output_file": "C:\\Users\\santh\\Downloads\\WebApp_Security_AI_Toolkit_Fresh_Dataset_Expansion\\WebApp_Security_AI_Toolkit_Fresh\\ml_backend\\dataset\\external_sources\\osv_collector\\analysis\\osv_records_recovered.csv"
+}

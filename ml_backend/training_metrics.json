@@ -1,0 +1,128 @@
+{
+  "model": "Character TF-IDF + engineered security indicators + Logistic Regression",
+  "original_examples_valid": 836,
+  "original_examples_after_deduplication": 834,
+  "owasp_examples_imported": 2740,
+  "owasp_examples_after_deduplication": 2740,
+  "combined_examples_after_deduplication": 3574,
+  "duplicates_removed_total": 2,
+  "class_counts_all": {
+    "safe": 1746,
+    "vulnerable": 1828
+  },
+  "source_counts": {
+    "original_curated": 834,
+    "OWASP-Benchmark-Java-1.2": 2740
+  },
+  "category_counts": {
+    "vulnerable": 60,
+    "safe": 80,
+    "CSRF": 2,
+    "SSRF": 2,
+    "Broken Access Control": 2,
+    "CORS Misconfiguration": 19,
+    "JWT Misconfiguration": 20,
+    "Insecure Cookie": 22,
+    "XXE": 2,
+    "Open Redirect": 20,
+    "Server-Side Template Injection": 20,
+    "Security Misconfiguration": 1,
+    "Password Storage": 2,
+    "SQL Injection": 20,
+    "SQL Injection - safe": 20,
+    "Cross-Site Scripting (XSS)": 19,
+    "Cross-Site Scripting (XSS) - safe": 20,
+    "Command Injection": 20,
+    "Command Injection - safe": 20,
+    "Cross-Site Request Forgery (CSRF)": 18,
+    "Cross-Site Request Forgery (CSRF) - safe": 18,
+    "Server-Side Request Forgery (SSRF)": 19,
+    "Server-Side Request Forgery (SSRF) - safe": 20,
+    "Broken Access Control / IDOR": 20,
+    "Broken Access Control / IDOR - safe": 19,
+    "CORS Misconfiguration - safe": 17,
+    "JWT Misconfiguration - safe": 18,
+    "Insecure Cookie - safe": 20,
+    "XML External Entity (XXE)": 16,
+    "XML External Entity (XXE) - safe": 16,
+    "Open Redirect - safe": 20,
+    "Weak Password Storage": 18,
+    "Weak Password Storage - safe": 20,
+    "Path Traversal": 20,
+    "Path Traversal - safe": 20,
+    "Insecure Deserialization": 17,
+    "Insecure Deserialization - safe": 18,
+    "Insecure TLS Configuration": 16,
+    "Insecure TLS Configuration - safe": 17,
+    "Server-Side Template Injection - safe": 20,
+    "Security Misconfiguration / Debug": 18,
+    "Security Misconfiguration / Debug - safe": 18,
+    "Hardcoded Secrets": 20,
+    "Hardcoded Secrets - safe": 20,
+    "path_traversal": 268,
+    "weak_hashing": 236,
+    "trust_boundary_violation": 126,
+    "weak_cryptography": 246,
+    "command_injection": 251,
+    "sql_injection": 504,
+    "weak_randomness": 493,
+    "ldap_injection": 59,
+    "xss": 455,
+    "insecure_cookies": 67,
+    "xpath_injection": 35
+  },
+  "evaluation_protocol": "Train on all unique original examples plus 80% of OWASP Benchmark test cases; evaluate on held-out 20% of OWASP Benchmark test cases.",
+  "evaluation_split": "stratified OWASP test-case holdout; one benchmark project only; not project-separated",
+  "train_rows": 3026,
+  "test_rows": 548,
+  "test_class_counts": {
+    "safe": 265,
+    "vulnerable": 283
+  },
+  "accuracy": 0.854,
+  "precision": 0.8488,
+  "recall": 0.8728,
+  "f1": 0.8606,
+  "confusion_matrix_labels": [
+    "safe",
+    "vulnerable"
+  ],
+  "confusion_matrix": [
+    [
+      221,
+      44
+    ],
+    [
+      36,
+      247
+    ]
+  ],
+  "classification_report": {
+    "safe": {
+      "precision": 0.8599221789883269,
+      "recall": 0.8339622641509434,
+      "f1-score": 0.8467432950191571,
+      "support": 265.0
+    },
+    "vulnerable": {
+      "precision": 0.8487972508591065,
+      "recall": 0.872791519434629,
+      "f1-score": 0.8606271777003485,
+      "support": 283.0
+    },
+    "accuracy": 0.8540145985401459,
+    "macro avg": {
+      "precision": 0.8543597149237168,
+      "recall": 0.8533768917927862,
+      "f1-score": 0.8536852363597528,
+      "support": 548.0
+    },
+    "weighted avg": {
+      "precision": 0.8541770062500617,
+      "recall": 0.8540145985401459,
+      "f1-score": 0.8539132563307943,
+      "support": 548.0
+    }
+  },
+  "evaluation_warning": "These metrics measure held-out OWASP Benchmark Java test cases, not unseen independent projects or production applications. The original corpus may be curated/synthetic. OWASP categories do not cover all 18 toolkit categories."
+}

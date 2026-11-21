@@ -1,0 +1,9 @@
+{
+  "generated_at": "2026-11-20T05:04:10.626545+00:00",
+  "dataset_type": "Verified Vulnerability Source Pairs",
+  "samples_processed": 1,
+  "samples_exported": 1,
+  "errors": [],
+  "output_csv": "C:\\Users\\santh\\Downloads\\WebApp_Security_AI_Toolkit_Fresh_Dataset_Expansion\\WebApp_Security_AI_Toolkit_Fresh\\ml_backend\\dataset\\processed\\verified\\verified_source_pairs.csv",
+  "methodology": "Each record contains vulnerable and patched source code paired with provenance metadata. Patched code is labeled Patched, not universally Safe. These records require further review before conversion into ML training samples."
+}

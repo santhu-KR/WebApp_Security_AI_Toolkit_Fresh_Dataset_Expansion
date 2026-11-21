@@ -1,0 +1,123 @@
+{
+  "dataset": "C:\\Users\\santh\\Downloads\\WebApp_Security_AI_Toolkit_Fresh_Dataset_Expansion\\WebApp_Security_AI_Toolkit_Fresh\\ml_backend\\dataset\\processed\\security_snippets_clean.csv",
+  "total_examples": 14496,
+  "training_examples": 11596,
+  "testing_examples": 2900,
+  "split": "80/20 stratified row-level split",
+  "random_state": 42,
+  "models": {
+    "V1": {
+      "accuracy": 0.966551724137931,
+      "precision": 0.968299711815562,
+      "recall": 0.9620615604867573,
+      "f1_score": 0.9651705565529622,
+      "confusion_matrix": [
+        [
+          1459,
+          44
+        ],
+        [
+          53,
+          1344
+        ]
+      ],
+      "classification_report": {
+        "safe": {
+          "precision": 0.96494708994709,
+          "recall": 0.9707252162341983,
+          "f1-score": 0.9678275290215589,
+          "support": 1503.0
+        },
+        "vulnerable": {
+          "precision": 0.968299711815562,
+          "recall": 0.9620615604867573,
+          "f1-score": 0.9651705565529622,
+          "support": 1397.0
+        },
+        "accuracy": 0.966551724137931,
+        "macro avg": {
+          "precision": 0.9666234008813259,
+          "recall": 0.9663933883604778,
+          "f1-score": 0.9664990427872606,
+          "support": 2900.0
+        },
+        "weighted avg": {
+          "precision": 0.9665621288264884,
+          "recall": 0.966551724137931,
+          "f1-score": 0.9665476012496177,
+          "support": 2900.0
+        }
+      }
+    },
+    "V2": {
+      "accuracy": 0.9672413793103448,
+      "precision": 0.9663323782234957,
+      "recall": 0.9656406585540444,
+      "f1_score": 0.9659863945578231,
+      "confusion_matrix": [
+        [
+          1456,
+          47
+        ],
+        [
+          48,
+          1349
+        ]
+      ],
+      "classification_report": {
+        "safe": {
+          "precision": 0.9680851063829787,
+          "recall": 0.9687292082501663,
+          "f1-score": 0.9684070502161622,
+          "support": 1503.0
+        },
+        "vulnerable": {
+          "precision": 0.9663323782234957,
+          "recall": 0.9656406585540444,
+          "f1-score": 0.9659863945578231,
+          "support": 1397.0
+        },
+        "accuracy": 0.9672413793103448,
+        "macro avg": {
+          "precision": 0.9672087423032372,
+          "recall": 0.9671849334021053,
+          "f1-score": 0.9671967223869926,
+          "support": 2900.0
+        },
+        "weighted avg": {
+          "precision": 0.9672407749213243,
+          "recall": 0.9672413793103448,
+          "f1-score": 0.9672409619559208,
+          "support": 2900.0
+        }
+      }
+    }
+  },
+  "comparison": [
+    {
+      "Metric": "Accuracy",
+      "V1": 0.966551724137931,
+      "V2": 0.9672413793103448,
+      "Difference (V2 - V1)": 0.0007
+    },
+    {
+      "Metric": "Precision",
+      "V1": 0.968299711815562,
+      "V2": 0.9663323782234957,
+      "Difference (V2 - V1)": -0.002
+    },
+    {
+      "Metric": "Recall",
+      "V1": 0.9620615604867573,
+      "V2": 0.9656406585540444,
+      "Difference (V2 - V1)": 0.0036
+    },
+    {
+      "Metric": "F1-score",
+      "V1": 0.9651705565529622,
+      "V2": 0.9659863945578231,
+      "Difference (V2 - V1)": 0.0008
+    }
+  ],
+  "evaluation_warning": "This is a random row-level holdout evaluation. Related code templates may occur in both train and test sets. It does not establish performance on independent projects or production apps."
+}

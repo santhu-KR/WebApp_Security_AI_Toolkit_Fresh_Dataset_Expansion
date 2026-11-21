@@ -1,0 +1,20 @@
+{
+  "method": "Character TF-IDF 3-5 grams; maximum cosine similarity to any Juliet training row",
+  "split": "First StratifiedGroupKFold fold, n_splits=5, shuffle=True, random_state=42",
+  "training_rows": 8733,
+  "testing_rows": 2191,
+  "group_overlap": 0,
+  "vocabulary_features": 17103,
+  "similarity_mean": 0.9667,
+  "similarity_median": 0.9766,
+  "similarity_p90": 0.9927,
+  "similarity_p95": 0.9943,
+  "similarity_max": 0.9972,
+  "test_samples_at_or_above_threshold": {
+    "0.8": 2180,
+    "0.9": 2092,
+    "0.95": 1781,
+    "0.99": 343
+  },
+  "interpretation_note": "Cosine similarity is a screening signal, not proof of leakage. High similarity can arise from shared Juliet templates or common syntax. Inspect the highest-scoring pairs before drawing conclusions."
+}

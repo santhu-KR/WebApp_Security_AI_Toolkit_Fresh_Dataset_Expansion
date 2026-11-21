@@ -1,0 +1,28 @@
+{
+    "model": "Random Forest",
+    "dataset": "BAC-ML-1M",
+    "total_records": 1000000,
+    "training_records": 800000,
+    "testing_records": 200000,
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0,
+    "confusion_matrix": [
+        [
+            157216,
+            0
+        ],
+        [
+            0,
+            42784
+        ]
+    ],
+    "features": [
+        "request_method",
+        "resource_type",
+        "resource_classification",
+        "expected_access",
+        "actual_access_granted"
+    ]
+}

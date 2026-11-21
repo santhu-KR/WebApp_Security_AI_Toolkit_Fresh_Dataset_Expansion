@@ -1,0 +1,14 @@
+{
+    "dataset": {
+        "original_dataset_records": 798,
+        "real_training_records": 638,
+        "real_testing_records": 160,
+        "synthetic_records": 130,
+        "v2_training_records": 768,
+        "categories": 23
+    },
+    "best_model": "Linear SVM",
+    "best_weighted_f1": 0.7137829825924319,
+    "evaluation_method": "Both V1 and V2 evaluated using the same held-out real OSV test data.",
+    "synthetic_data_usage": "Synthetic data was used for training only."
+}

@@ -1,0 +1,52 @@
+{
+    "model_name": "Feature Model V1",
+    "model_type": "Character TF-IDF + engineered security features + Logistic Regression",
+    "dataset": "C:\\Users\\santh\\Downloads\\WebApp_Security_AI_Toolkit_Fresh_Dataset_Expansion\\WebApp_Security_AI_Toolkit_Fresh\\ml_backend\\dataset\\processed\\security_snippets_clean.csv",
+    "training_date_utc": "2026-11-18T15:30:32.930779+00:00",
+    "training_samples": 14496,
+    "class_distribution": {
+        "safe": 7511,
+        "vulnerable": 6985
+    },
+    "source_distribution": {
+        "NIST-SARD-Juliet-Java-1.3": 10924,
+        "OWASP-Benchmark-Java": 2740,
+        "original_curated": 832
+    },
+    "category_distribution": {
+        "SQL Injection": 6338,
+        "Cross-Site Scripting (XSS)": 2438,
+        "Path Traversal": 1683,
+        "Command Injection": 963,
+        "Open Redirect": 538,
+        "Weak Randomness": 493,
+        "Hardcoded Secrets": 392,
+        "Weak Cryptography": 246,
+        "Weak Hashing": 236,
+        "Weak Password Storage": 215,
+        "Insecure Cookie": 158,
+        "Uncategorized": 139,
+        "Trust Boundary Violation": 126,
+        "Insecure TLS Configuration": 98,
+        "LDAP Injection": 59,
+        "Broken Access Control / IDOR": 41,
+        "Server-Side Request Forgery (SSRF)": 41,
+        "Server-Side Template Injection": 40,
+        "JWT Misconfiguration": 38,
+        "Cross-Site Request Forgery (CSRF)": 38,
+        "Security Misconfiguration / Debug": 37,
+        "CORS Misconfiguration": 36,
+        "Insecure Deserialization": 35,
+        "XPath Injection": 35,
+        "XML External Entity (XXE)": 33
+    },
+    "evaluation_reference": {
+        "method": "Grouped 5-fold cross-validation",
+        "accuracy": 0.9639,
+        "precision": 0.9567,
+        "recall": 0.9688,
+        "f1_score": 0.9627,
+        "note": "These are previously measured out-of-fold metrics, not training-set performance."
+    },
+    "model_file": "C:\\Users\\santh\\Downloads\\WebApp_Security_AI_Toolkit_Fresh_Dataset_Expansion\\WebApp_Security_AI_Toolkit_Fresh\\ml_backend\\models\\security_model_v1.joblib"
+}

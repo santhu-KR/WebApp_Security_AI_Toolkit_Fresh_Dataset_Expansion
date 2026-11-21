@@ -1,0 +1,20 @@
+{
+  "total_rows": 3576,
+  "source_rows": {
+    "original_curated": 836,
+    "OWASP-Benchmark-Java": 2740
+  },
+  "label_counts": {
+    "vulnerable": 1829,
+    "safe": 1747
+  },
+  "normalized_category_count_including_uncategorized": 25,
+  "conflicting_code_groups": 2,
+  "conflicting_rows": 4,
+  "warning": "Audit only: this does not change training data or model. Resolve contradictory duplicate labels before retraining. Category counts measure available labelled snippets, not model recall.",
+  "outputs": [
+    "dataset/processed/security_snippets_normalized.csv",
+    "dataset/processed/category_audit.csv",
+    "dataset/processed/duplicate_conflicts.csv"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+    "dataset_name": "OSV Vulnerability TF-IDF Dataset",
+    "total_records": 798,
+    "total_features": 4243,
+    "number_of_categories": 23,
+    "max_features": 10000,
+    "ngram_range": [
+        1,
+        2
+    ],
+    "min_df": 2,
+    "max_df": 0.95,
+    "test_size": 0.2,
+    "random_state": 42,
+    "training_records": 638,
+    "testing_records": 160,
+    "stratified_split": true,
+    "matrix_shape": [
+        798,
+        4243
+    ],
+    "matrix_sparsity_percentage": 99.24,
+    "category_distribution": {
+        "DoS": 228,
+        "Memory Safety": 94,
+        "Insecure Deserialization": 57,
+        "Input Validation / Data Handling": 55,
+        "XSS": 54,
+        "Path Traversal / File Handling": 39,
+        "Information Disclosure": 38,
+        "SQL Injection": 32,
+        "Code / Template Injection": 32,
+        "Authentication / Session": 28,
+        "Broken Access Control": 24,
+        "Prototype Pollution": 17,
+        "SSRF / External Resource Access": 17,
+        "HTTP / Protocol Handling": 14,
+        "CSRF / Request Forgery": 13,
+        "Security Misconfiguration": 11,
+        "Other": 11,
+        "Resource / Logic Errors": 10,
+        "Open Redirect": 7,
+        "Command Injection": 7,
+        "Cryptographic Issues": 4,
+        "XML / XPath / LDAP Injection": 4,
+        "Race Condition": 2
+    }
+}

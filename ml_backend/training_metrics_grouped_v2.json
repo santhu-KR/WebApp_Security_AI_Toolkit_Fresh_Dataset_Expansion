@@ -1,0 +1,313 @@
+{
+  "model": "Character TF-IDF + engineered security indicators + Logistic Regression",
+  "dataset_file": "security_snippets_clean.csv",
+  "total_rows_used_for_final_model": 14496,
+  "source_counts": {
+    "NIST-SARD-Juliet-Java-1.3": 10924,
+    "OWASP-Benchmark-Java": 2740,
+    "original_curated": 832
+  },
+  "overall_label_counts": {
+    "safe": 7511,
+    "vulnerable": 6985
+  },
+  "evaluation_results": {
+    "owasp_cross_source": {
+      "evaluation_name": "OWASP cross-source",
+      "evaluation_protocol": "Train on Original + all Juliet; test on held-out OWASP examples. Measures transfer to another corpus.",
+      "train_rows": 11756,
+      "test_rows": 548,
+      "test_class_counts": {
+        "safe": 265,
+        "vulnerable": 283
+      },
+      "predicted_class_counts": {
+        "safe": 0,
+        "vulnerable": 548
+      },
+      "accuracy": 0.5164,
+      "precision": 0.5164,
+      "recall": 1.0,
+      "f1": 0.6811,
+      "confusion_matrix_labels": [
+        "safe",
+        "vulnerable"
+      ],
+      "confusion_matrix": [
+        [
+          0,
+          265
+        ],
+        [
+          0,
+          283
+        ]
+      ],
+      "classification_report": {
+        "safe": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 265.0
+        },
+        "vulnerable": {
+          "precision": 0.5164233576642335,
+          "recall": 1.0,
+          "f1-score": 0.681107099879663,
+          "support": 283.0
+        },
+        "accuracy": 0.5164233576642335,
+        "macro avg": {
+          "precision": 0.25821167883211676,
+          "recall": 0.5,
+          "f1-score": 0.3405535499398315,
+          "support": 548.0
+        },
+        "weighted avg": {
+          "precision": 0.2666930843412009,
+          "recall": 0.5164233576642335,
+          "f1-score": 0.35173961544880405,
+          "support": 548.0
+        }
+      },
+      "test_category_counts": {
+        "Weak Randomness": 109,
+        "SQL Injection": 103,
+        "Cross-Site Scripting (XSS)": 87,
+        "Path Traversal": 53,
+        "Command Injection": 51,
+        "Weak Cryptography": 48,
+        "Weak Hashing": 44,
+        "Trust Boundary Violation": 22,
+        "LDAP Injection": 13,
+        "XPath Injection": 11,
+        "Insecure Cookie": 7
+      }
+    },
+    "owasp_within_source": {
+      "evaluation_name": "OWASP within-source",
+      "evaluation_protocol": "Train on Original + all Juliet + 80% OWASP; test on the remaining stratified 20% OWASP examples.",
+      "train_rows": 13948,
+      "test_rows": 548,
+      "test_class_counts": {
+        "safe": 265,
+        "vulnerable": 283
+      },
+      "predicted_class_counts": {
+        "safe": 245,
+        "vulnerable": 303
+      },
+      "accuracy": 0.865,
+      "precision": 0.8449,
+      "recall": 0.9046,
+      "f1": 0.8737,
+      "confusion_matrix_labels": [
+        "safe",
+        "vulnerable"
+      ],
+      "confusion_matrix": [
+        [
+          218,
+          47
+        ],
+        [
+          27,
+          256
+        ]
+      ],
+      "classification_report": {
+        "safe": {
+          "precision": 0.889795918367347,
+          "recall": 0.8226415094339623,
+          "f1-score": 0.8549019607843137,
+          "support": 265.0
+        },
+        "vulnerable": {
+          "precision": 0.8448844884488449,
+          "recall": 0.9045936395759717,
+          "f1-score": 0.8737201365187713,
+          "support": 283.0
+        },
+        "accuracy": 0.864963503649635,
+        "macro avg": {
+          "precision": 0.8673402034080959,
+          "recall": 0.863617574504967,
+          "f1-score": 0.8643110486515425,
+          "support": 548.0
+        },
+        "weighted avg": {
+          "precision": 0.8666026069313321,
+          "recall": 0.864963503649635,
+          "f1-score": 0.864620106282218,
+          "support": 548.0
+        }
+      },
+      "test_category_counts": {
+        "Weak Randomness": 109,
+        "SQL Injection": 103,
+        "Cross-Site Scripting (XSS)": 87,
+        "Path Traversal": 53,
+        "Command Injection": 51,
+        "Weak Cryptography": 48,
+        "Weak Hashing": 44,
+        "Trust Boundary Violation": 22,
+        "LDAP Injection": 13,
+        "XPath Injection": 11,
+        "Insecure Cookie": 7
+      }
+    },
+    "juliet_cross_source": {
+      "evaluation_name": "Juliet cross-source",
+      "evaluation_protocol": "Train on Original + all OWASP; test on one grouped Juliet fold. Measures transfer to another corpus.",
+      "train_rows": 3572,
+      "test_rows": 2191,
+      "test_class_counts": {
+        "safe": 1158,
+        "vulnerable": 1033
+      },
+      "predicted_class_counts": {
+        "safe": 1622,
+        "vulnerable": 569
+      },
+      "accuracy": 0.5582,
+      "precision": 0.5571,
+      "recall": 0.3069,
+      "f1": 0.3958,
+      "confusion_matrix_labels": [
+        "safe",
+        "vulnerable"
+      ],
+      "confusion_matrix": [
+        [
+          906,
+          252
+        ],
+        [
+          716,
+          317
+        ]
+      ],
+      "classification_report": {
+        "safe": {
+          "precision": 0.5585696670776819,
+          "recall": 0.7823834196891192,
+          "f1-score": 0.6517985611510791,
+          "support": 1158.0
+        },
+        "vulnerable": {
+          "precision": 0.5571177504393673,
+          "recall": 0.3068731848983543,
+          "f1-score": 0.39575530586766544,
+          "support": 1033.0
+        },
+        "accuracy": 0.5581926061159288,
+        "macro avg": {
+          "precision": 0.5578437087585246,
+          "recall": 0.5446283022937367,
+          "f1-score": 0.5237769335093723,
+          "support": 2191.0
+        },
+        "weighted avg": {
+          "precision": 0.5578851258237435,
+          "recall": 0.5581926061159288,
+          "f1-score": 0.5310807689521899,
+          "support": 2191.0
+        }
+      },
+      "test_category_counts": {
+        "SQL Injection": 1167,
+        "Cross-Site Scripting (XSS)": 392,
+        "Path Traversal": 275,
+        "Command Injection": 134,
+        "Open Redirect": 97,
+        "Hardcoded Secrets": 66,
+        "Weak Password Storage": 36,
+        "Insecure TLS Configuration": 15,
+        "Insecure Cookie": 9
+      }
+    },
+    "juliet_within_source": {
+      "evaluation_name": "Juliet within-source",
+      "evaluation_protocol": "Train on Original + all OWASP + 80% of Juliet groups; test on the remaining grouped Juliet fold.",
+      "train_rows": 12305,
+      "test_rows": 2191,
+      "test_class_counts": {
+        "safe": 1158,
+        "vulnerable": 1033
+      },
+      "predicted_class_counts": {
+        "safe": 1158,
+        "vulnerable": 1033
+      },
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "confusion_matrix_labels": [
+        "safe",
+        "vulnerable"
+      ],
+      "confusion_matrix": [
+        [
+          1158,
+          0
+        ],
+        [
+          0,
+          1033
+        ]
+      ],
+      "classification_report": {
+        "safe": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 1158.0
+        },
+        "vulnerable": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 1033.0
+        },
+        "accuracy": 1.0,
+        "macro avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 2191.0
+        },
+        "weighted avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 2191.0
+        }
+      },
+      "test_category_counts": {
+        "SQL Injection": 1167,
+        "Cross-Site Scripting (XSS)": 392,
+        "Path Traversal": 275,
+        "Command Injection": 134,
+        "Open Redirect": 97,
+        "Hardcoded Secrets": 66,
+        "Weak Password Storage": 36,
+        "Insecure TLS Configuration": 15,
+        "Insecure Cookie": 9
+      },
+      "juliet_train_groups": 4144,
+      "juliet_test_groups": 1038,
+      "group_overlap": 0
+    }
+  },
+  "juliet_group_overlap": 0,
+  "final_model_file": "security_model_grouped_v2.joblib",
+  "predictions_file": "evaluation_predictions_grouped_v2.csv",
+  "warnings": [
+    "Dataset labels and CWE/category mappings are provisional and require manual review.",
+    "Cross-source results measure corpus transfer, not within-corpus performance.",
+    "Within-source results use held-out examples; Juliet is split by test-case group.",
+    "The final deployment model is trained on all rows; its training fit is not an unbiased test score.",
+    "These benchmark results do not establish production detection accuracy."
+  ]
+}

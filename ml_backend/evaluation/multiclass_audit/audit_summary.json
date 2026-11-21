@@ -1,0 +1,57 @@
+{
+    "audit_date": "2026-11-18T23:08:11.141482",
+    "target_category_count": 24,
+    "low_sample_threshold": 20,
+    "total_records": 14496,
+    "safe_records": 7511,
+    "vulnerable_records": 6985,
+    "invalid_records": 0,
+    "mapped_vulnerable_records": 6864,
+    "unmapped_vulnerable_records": 0,
+    "manual_review_records": 61,
+    "generic_vulnerable_records": 60,
+    "duplicate_records": 0,
+    "conflicting_code_groups": 0,
+    "source_distribution": {
+        "NIST-SARD-Juliet-Java-1.3": 10924,
+        "OWASP-Benchmark-Java": 2740,
+        "original_curated": 832
+    },
+    "category_counts": {
+        "SQL Injection": 2354,
+        "Cross-Site Scripting (XSS)": 1497,
+        "Cross-Site Request Forgery (CSRF)": 20,
+        "Broken Authentication": 0,
+        "Broken Access Control": 0,
+        "Path Traversal": 1001,
+        "Command Injection": 558,
+        "Insecure Deserialization": 17,
+        "Sensitive Data Exposure": 168,
+        "Security Misconfiguration": 19,
+        "IDOR": 0,
+        "Server-Side Request Forgery (SSRF)": 21,
+        "Open Redirect": 340,
+        "Weak Password Storage": 105,
+        "Insecure TLS Configuration": 50,
+        "Insecure Cookie Configuration": 75,
+        "XML External Entity (XXE)": 17,
+        "LDAP Injection": 27,
+        "Server-Side Template Injection (SSTI)": 20,
+        "XPath Injection": 15,
+        "Weak Cryptography": 130,
+        "Weak Hashing": 129,
+        "Weak Randomness": 218,
+        "Trust Boundary Violation": 83
+    },
+    "missing_categories": [
+        "Broken Authentication",
+        "Broken Access Control",
+        "IDOR"
+    ],
+    "low_sample_categories": [
+        "Insecure Deserialization",
+        "Security Misconfiguration",
+        "XML External Entity (XXE)",
+        "XPath Injection"
+    ]
+}
