@@ -805,7 +805,7 @@ except Exception as exc:
 def ai_status():
     return jsonify({
         "available": bool(gemini_generate and os.environ.get("GEMINI_API_KEY")),
-        "model": os.environ.get("GEMINI_MODEL", "gemini-2.5-flash"),
+        "model": os.environ.get("GEMINI_MODEL", "gemini-3.0-flash"),
         "message": "AI service ready." if gemini_generate and os.environ.get("GEMINI_API_KEY") else "Configure GEMINI_API_KEY in the backend environment."
     })
 
@@ -829,7 +829,7 @@ def ai_explain():
     )
     try:
         answer = gemini_generate(prompt, "You are a defensive application security analyst. Be accurate, contextual, and avoid overstating scanner evidence.")
-        return jsonify({"answer": answer, "model": os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")})
+        return jsonify({"answer": answer, "model": os.environ.get("GEMINI_MODEL", "gemini-3.0-flash")})
     except Exception as exc:
         return jsonify({"error": str(exc)}), 502
 
@@ -865,8 +865,8 @@ def ai_chat():
         "or offensive instructions. For ordinary questions, do not force code output."
     )
     try:
-        answer = gemini_generate(context + "\n\nUSER QUESTION:\n" + prompt, system, model=os.environ.get("GEMINI_CHAT_MODEL", "gemini-2.5-flash"))
-        return jsonify({"answer": answer, "model": os.environ.get("GEMINI_CHAT_MODEL", "gemini-2.5-flash")})
+        answer = gemini_generate(context + "\n\nUSER QUESTION:\n" + prompt, system, model=os.environ.get("GEMINI_CHAT_MODEL", "gemini-3.0-flash"))
+        return jsonify({"answer": answer, "model": os.environ.get("GEMINI_CHAT_MODEL", "gemini-3.0-flash")})
     except Exception as exc:
         return jsonify({"error": str(exc)}), 502
 
