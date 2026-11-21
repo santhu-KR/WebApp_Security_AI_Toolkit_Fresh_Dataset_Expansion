@@ -20,7 +20,7 @@ from flask_cors import CORS
 
 try:
     from dotenv import load_dotenv
-    load_dotenv(HERE / ".env")
+    load_dotenv(Path(__file__).resolve().parent / ".env")
 except Exception:
     pass
 
