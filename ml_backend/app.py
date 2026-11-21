@@ -19,6 +19,12 @@ from flask import Flask, jsonify, request, g
 from flask_cors import CORS
 
 try:
+    from dotenv import load_dotenv
+    load_dotenv(HERE / ".env")
+except Exception:
+    pass
+
+try:
     from v10_predictor import V10Predictor
 except Exception:
     V10Predictor = None
