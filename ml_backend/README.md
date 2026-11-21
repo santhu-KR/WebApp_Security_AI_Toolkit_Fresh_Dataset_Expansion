@@ -61,3 +61,21 @@ Set `APP_TOKEN_SECRET` to a long random value in the environment before starting
 
 ### Add NIST Juliet Java 1.3
 See `DATASET_EXPANSION.md`. Download and extract the official NIST suite, then run `python import_nist_juliet.py --juliet-dir "PATH_TO_EXTRACTED_JULIET"`. This writes `dataset/external/nist_juliet_java.csv`. Run `python audit_dataset.py` before `python train_model.py`. The model remains a binary safe/vulnerable classifier; `category` is metadata, not an 18-class prediction output.
+
+
+## Gemini AI Explanation and Ask AI
+
+AI requests now go through the Flask backend. The Gemini API key is **not placed in React frontend code**.
+
+1. Copy `.env.example` to `.env` inside `ml_backend`.
+2. Edit `ml_backend/.env` and set `GEMINI_API_KEY` to your own Gemini API key. Keep this file private; it is ignored by Git.
+3. Install/update backend dependencies: `pip install -r requirements.txt`.
+4. Start the backend with `python app.py`.
+5. In the frontend, sign in, scan/load a project, select a finding, and use **Explain with AI**. For Ask AI, select a source file and use the Chat tab.
+
+AI endpoints (authenticated):
+- `GET /api/ai/status`
+- `POST /api/ai/explain`
+- `POST /api/ai/chat`
+
+The explanation is contextual and is intended as assistance—not a guarantee that a finding is confirmed. Validate recommendations before applying generated changes.
