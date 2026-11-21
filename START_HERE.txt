@@ -1,0 +1,11 @@
+FRESH CLEAN PROJECT COPY
+
+1. This ZIP contains one project root and one ml_backend folder.
+2. Extract the ZIP.
+3. Open the extracted WebApp_Security_AI_Toolkit_Fresh folder in VS Code.
+4. Do not copy this folder inside another ml_backend folder.
+5. Read PROJECT_BRIEF.md and README.md before running.
+6. Keep the included security_model.joblib and training_metrics.json unchanged until we verify the environment.
+7. For the first setup, open two terminals: one for the Python ML backend and one for the React frontend. We will do this step-by-step in chat.
+
+This package intentionally excludes the cloned BenchmarkJava Git repository, its .git history, old ZIP files, and accidentally nested ml_backend copies. The imported OWASP CSV is retained under ml_backend/dataset/external/.
