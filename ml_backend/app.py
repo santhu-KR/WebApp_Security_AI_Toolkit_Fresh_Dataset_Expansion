@@ -783,6 +783,87 @@ def delete_scan_history():
     return jsonify({"success": True, "message": "Scan history cleared."})
 
 
+
+
+# =========================================================
+# SERVER-SIDE AI EXPLANATION AND CHAT (API KEY NEVER SENT TO UI)
+# =========================================================
+try:
+    from ai_service import gemini_generate
+    AI_SERVICE_ERROR = None
+except Exception as exc:
+    gemini_generate = None
+    AI_SERVICE_ERROR = str(exc)
+
+@app.get("/api/ai/status")
+def ai_status():
+    return jsonify({
+        "available": bool(gemini_generate and os.environ.get("GEMINI_API_KEY")),
+        "model": os.environ.get("GEMINI_MODEL", "gemini-2.5-flash"),
+        "message": "AI service ready." if gemini_generate and os.environ.get("GEMINI_API_KEY") else "Configure GEMINI_API_KEY in the backend environment."
+    })
+
+@app.post("/api/ai/explain")
+@require_auth
+def ai_explain():
+    if not gemini_generate:
+        return jsonify({"error": "AI service module unavailable: " + str(AI_SERVICE_ERROR)}), 503
+    payload = request.get_json(silent=True) or {}
+    finding = payload.get("finding", {})
+    code_context = str(payload.get("codeContext", ""))[:20000]
+    if not isinstance(finding, dict) or not finding:
+        return jsonify({"error": "Provide a finding object."}), 400
+    prompt = (
+        "Analyze this defensive code-security finding using the supplied code context. "
+        "Do not assume it is confirmed based only on a rule match. Clearly state whether evidence is "
+        "confirmed, likely, or insufficient. Explain in simple English, include cause, impact, "
+        "evidence, safe remediation, and a small secure code example if relevant. Do not provide "
+        "exploit payloads or attack instructions.\n\nFINDING:\n" + json.dumps(finding, ensure_ascii=False) +
+        "\n\nSOURCE CONTEXT:\n" + code_context
+    )
+    try:
+        answer = gemini_generate(prompt, "You are a defensive application security analyst. Be accurate, contextual, and avoid overstating scanner evidence.")
+        return jsonify({"answer": answer, "model": os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")})
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 502
+
+@app.post("/api/ai/chat")
+@require_auth
+def ai_chat():
+    if not gemini_generate:
+        return jsonify({"error": "AI service module unavailable: " + str(AI_SERVICE_ERROR)}), 503
+    payload = request.get_json(silent=True) or {}
+    prompt = str(payload.get("prompt", "")).strip()[:6000]
+    file_path = str(payload.get("filePath", ""))[:500]
+    file_content = str(payload.get("fileContent", ""))[:30000]
+    findings = payload.get("findings", [])
+    history = payload.get("history", [])
+    if not prompt:
+        return jsonify({"error": "Prompt cannot be empty."}), 400
+    if not isinstance(findings, list): findings = []
+    if not isinstance(history, list): history = []
+    safe_history = []
+    for item in history[-8:]:
+        if isinstance(item, dict) and item.get("role") in ("user", "model"):
+            safe_history.append(str(item.get("text", ""))[:3000])
+    context = (
+        "Selected file: " + file_path + "\n\nSOURCE FILE:\n" + file_content +
+        "\n\nFINDINGS FOR THIS FILE:\n" + json.dumps(findings[:50], ensure_ascii=False) +
+        "\n\nRECENT CHAT:\n" + "\n".join(safe_history)
+    )
+    system = (
+        "You are a defensive application-security assistant helping review an authorized source-code project. "
+        "Answer questions using the selected file and findings context. Be honest if evidence is insufficient. "
+        "When the user asks to fix or rewrite code, return a complete replacement file in one fenced code block; "
+        "never omit sections or use ellipses. Avoid exploit payloads, credential theft, destructive actions, "
+        "or offensive instructions. For ordinary questions, do not force code output."
+    )
+    try:
+        answer = gemini_generate(context + "\n\nUSER QUESTION:\n" + prompt, system, model=os.environ.get("GEMINI_CHAT_MODEL", "gemini-2.5-flash"))
+        return jsonify({"answer": answer, "model": os.environ.get("GEMINI_CHAT_MODEL", "gemini-2.5-flash")})
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 502
+
 # =========================================================
 # RUN SERVER - KEEP THIS AT THE VERY END
 # =========================================================
