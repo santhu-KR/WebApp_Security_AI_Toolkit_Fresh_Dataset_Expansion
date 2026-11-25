@@ -84,8 +84,8 @@ def gemini_generate(
     if not GEMINI_API_KEY:
 
         raise RuntimeError(
-            "GEMINI_API_KEY is not configured. "
-            "Check ml_backend/.env"
+            "GEMINI_API_KEY is missing or is still a placeholder. "
+            "Configure a real key in ml_backend/.env and restart the backend."
         )
 
 
@@ -114,8 +114,7 @@ def gemini_generate(
         "https://generativelanguage.googleapis.com/"
         "v1beta/models/"
         + model_name
-        + ":generateContent?key="
-        + GEMINI_API_KEY
+        + ":generateContent"
     )
 
 
@@ -189,6 +188,8 @@ def gemini_generate(
         headers={
 
             "Content-Type": "application/json",
+
+            "x-goog-api-key": GEMINI_API_KEY,
 
             "User-Agent": "WebApp-Security-AI-Toolkit"
 
