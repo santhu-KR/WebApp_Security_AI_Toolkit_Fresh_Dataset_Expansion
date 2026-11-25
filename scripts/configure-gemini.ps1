@@ -1,26 +1,25 @@
-# Configure Gemini API key for local Vite development.
-# This script writes the key only to the ignored root .env file.
+# Configure Gemini for the Flask backend.
+# This script stores the key only in ml_backend/.env (ignored by Git).
 $ErrorActionPreference = "Stop"
+$backendDir = Join-Path (Get-Location) "ml_backend"
+if (!(Test-Path $backendDir)) { throw "Run this script from the repository root; ml_backend folder not found." }
+$envPath = Join-Path $backendDir ".env"
 
 $keySecure = Read-Host "Paste your Gemini API key" -AsSecureString
 $ptr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($keySecure)
-try {
-    $key = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($ptr)
-} finally {
-    [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($ptr)
-}
+try { $key = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($ptr) }
+finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($ptr) }
 
-if ([string]::IsNullOrWhiteSpace($key)) {
-    Write-Error "No API key entered. Nothing was changed."
-    exit 1
-}
+if ([string]::IsNullOrWhiteSpace($key)) { throw "No API key entered." }
+$key = $key.Trim()
+if ($key -match "[\r\n]") { throw "API key must be a single line." }
 
-$envContent = @"
-# Local demo only. Vite embeds this key into browser assets.
-# Do not deploy this configuration publicly.
+$content = @"
 GEMINI_API_KEY=$key
+GEMINI_MODEL=gemini-2.5-pro
+GEMINI_CHAT_MODEL=gemini-2.5-pro
+APP_TOKEN_SECRET=replace_with_a_long_random_secret
 "@
-
-Set-Content -Path ".env" -Value $envContent -Encoding UTF8
-Write-Host "Created .env in project root. It is ignored by Git." -ForegroundColor Green
-Write-Host "Restart Vite: stop it with Ctrl+C, then run npm run dev." -ForegroundColor Yellow
+Set-Content -Path $envPath -Value $content -Encoding ascii
+Write-Host "Created ml_backend/.env successfully. API key is not printed." -ForegroundColor Green
+Write-Host "Now restart Flask from ml_backend: python app.py" -ForegroundColor Yellow
