@@ -535,7 +535,7 @@ function App(){
 
      <div className="grid grid-cols-1 xl:grid-cols-5 gap-4 min-h-[650px]">
 
-      <div className="panel p-4 xl:col-span-3 flex flex-col min-h-[650px]"><div className="flex items-center justify-between border-b border-slate-800 pb-3"><div className="flex items-center gap-2 text-sm font-semibold"><MessageSquare size={16} className="text-emerald-400"/> Security assistant</div><span className="text-[10px] text-slate-500">gemini-2.5-pro</span></div>
+      <div className="panel p-4 xl:col-span-3 flex flex-col min-h-[650px]"><div className="flex items-center justify-between border-b border-slate-800 pb-3"><div className="flex items-center gap-2 text-sm font-semibold"><MessageSquare size={16} className="text-emerald-400"/> Security assistant</div><span className="text-[10px] text-slate-500">Gemini AI</span></div>
 
        <div className="flex flex-wrap gap-2 py-3">{["Fix all vulnerabilities & give full corrected file","Explain line-by-line security risks","Harden input validation & error handling"].map(p=><button key={p} className="text-[10px] border border-slate-700 rounded-full px-3 py-2 text-slate-400 hover:text-emerald-300 hover:border-emerald-700" onClick={()=>void sendChat(p)}>{p}</button>)}</div>
 
