@@ -81,7 +81,7 @@ def gemini_generate(
     # API KEY VALIDATION
     # -----------------------------------------------------
 
-    if not GEMINI_API_KEY:
+    if not GEMINI_API_KEY or GEMINI_API_KEY.lower().startswith(("put_your", "replace_", "your_")):
 
         raise RuntimeError(
             "GEMINI_API_KEY is missing or is still a placeholder. "
