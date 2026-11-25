@@ -142,18 +142,22 @@ See `ml_backend/DATASET_EXPANSION.md` for the official OWASP Benchmark import wo
 The ML backend now includes an importer for the official NIST SARD Juliet Java 1.3 suite. Read `ml_backend/DATASET_EXPANSION.md` before importing. Do not train immediately after downloading: inspect the generated import summary and dataset audit first.
 
 
-## Configure Gemini API (local development)
+## Configure Gemini API (Flask backend)
 
-1. Create an API key in Google AI Studio: https://aistudio.google.com/app/apikey
-2. From the repository root in PowerShell, run:
+1. Create a Gemini key in Google AI Studio: https://aistudio.google.com/app/apikey
+2. From the repository root, run in PowerShell:
    ```powershell
+   git pull origin main
    .\\scripts\\configure-gemini.ps1
    ```
-3. Paste the key when prompted. The script writes it to the root `.env` file. That file is ignored by Git and must never be committed.
-4. Restart Vite:
+3. This creates **ml_backend/.env** (not the root .env). The key is not printed and the file is ignored by Git.
+4. Start Flask from the backend folder:
    ```powershell
-   Ctrl+C
-   npm run dev
+   cd ml_backend
+   python app.py
    ```
+5. Check status at http://127.0.0.1:5001/api/ai/status (adjust port to the one printed by Flask).
+6. Restart the frontend in another terminal with `npm run dev`.
 
-**Security warning:** This project currently uses a local-demo Vite configuration that embeds the Gemini key in frontend assets. Use only locally with a key you can revoke. Do not deploy or share a build containing the key. For public deployment, Gemini requests must be moved behind a server-side authenticated proxy.
+Never commit or share the real API key. Use backend-only configuration for any public deployment.
+
