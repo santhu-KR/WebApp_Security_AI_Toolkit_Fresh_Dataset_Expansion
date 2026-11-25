@@ -111,7 +111,19 @@ function App(){
 
  const [signedInEmail,setSignedInEmail]=useState("");
  const [scanHistory,setScanHistory]=useState<any[]>(()=>{try{return JSON.parse(localStorage.getItem("sentinel_scan_history")||"[]");}catch{return []; }});
- const securityScore=useMemo(()=>Math.max(0,Math.min(100,100-findings.reduce((sum,f)=>sum+({Critical:25,High:15,Normal:8,Low:3}[f.severity]||0),0)),[findings]);
+ const securityScore = useMemo(() => {
+  const deductions: Record<string, number> = {
+   Critical: 25,
+   High: 15,
+   Normal: 8,
+   Low: 3,
+  };
+  const totalDeduction = findings.reduce(
+   (sum, f) => sum + (deductions[f.severity] || 0),
+   0
+  );
+  return Math.max(0, Math.min(100, 100 - totalDeduction));
+ }, [findings]);
  const scoreLabel=securityScore>=90?"Excellent":securityScore>=75?"Good":securityScore>=50?"Needs Improvement":"At Risk";
 
 
