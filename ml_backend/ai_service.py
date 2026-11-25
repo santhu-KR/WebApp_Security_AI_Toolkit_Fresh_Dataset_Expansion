@@ -332,17 +332,28 @@ def gemini_generate(
 
         elif exc.code == 404:
 
-            raise RuntimeError(
+            # Retry with the project default model when the configured
+            # model is unavailable (for example, an old model in .env).
+            if model_name != DEFAULT_MODEL:
+                print(
+                    "[WARNING] Gemini model "
+                    + model_name
+                    + " unavailable. Retrying with "
+                    + DEFAULT_MODEL
+                )
+                return gemini_generate(
+                    prompt=prompt,
+                    system_instruction=system_instruction,
+                    model=DEFAULT_MODEL
+                )
 
+            raise RuntimeError(
                 "Gemini model not found: "
                 + model_name
-                + ". Check GEMINI_MODEL in ml_backend/.env "
-                "and verify that your API key supports this model. "
-                "Original error: "
+                + ". Check model availability and API-key access. "
+                + "Original error: "
                 + str(error_message)
-
             )
-
 
         # -------------------------------------------------
         # 429 QUOTA
