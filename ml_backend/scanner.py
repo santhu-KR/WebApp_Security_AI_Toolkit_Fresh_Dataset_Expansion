@@ -30,18 +30,12 @@ HEADERS = {
 # ML MODEL INTEGRATION
 # =========================================================
 
+# The website scanner is rule-based. The active V10 model is
+# loaded and used by app.py for source-code prediction.
+# The old V2 predictor is intentionally disconnected here.
 ML_AVAILABLE = False
 
-try:
-    from ml_predictor import predict_vulnerability
-
-    ML_AVAILABLE = True
-
-    print("[INFO] ML model integration enabled.")
-
-except ImportError:
-    print("[INFO] ML predictor unavailable.")
-    print("[INFO] Using rule-based classification.")
+print("[INFO] Scanner uses rule-based checks; V10 ML is managed by app.py.")
 
 
 # =========================================================
@@ -138,83 +132,11 @@ def create_finding(
 # =========================================================
 
 def classify_finding(finding):
-
-    if not ML_AVAILABLE:
-
-        finding["ml_prediction"] = None
-
-        finding["ml_enabled"] = False
-
-        return finding
-
-    try:
-
-        text = (
-            finding.get("vulnerability", "")
-            + " "
-            + finding.get("description", "")
-            + " "
-            + finding.get("recommendation", "")
-        )
-
-        prediction = predict_vulnerability(text)
-
-        if prediction and prediction.get("success"):
-
-            predicted_category = prediction.get(
-                "predicted_category"
-            )
-
-            finding["ml_model_prediction"] = predicted_category
-
-            finding["ml_algorithm"] = prediction.get(
-                "algorithm"
-            )
-
-            finding["ml_model_version"] = prediction.get(
-                "model_version"
-            )
-
-            finding["ml_decision_score"] = prediction.get(
-                "decision_score"
-            )
-
-            finding["ml_score_type"] = prediction.get(
-                "score_type"
-            )
-
-            finding["ml_enabled"] = True
-
-            # Compare the ML prediction with the scanner's
-            # rule-based category.
-
-            rule_category = finding.get("category")
-
-            if rule_category:
-
-                finding["ml_agrees"] = (
-                    predicted_category == rule_category
-                )
-
-            else:
-
-                finding["ml_agrees"] = None
-
-            # Preserve the original model prediction.
-            # Never falsely change the model's output.
-
-            finding["ml_prediction"] = predicted_category
-
-        else:
-
-            finding["ml_enabled"] = False
-
-    except Exception as error:
-
-        finding["ml_enabled"] = False
-
-        finding["ml_error"] = str(error)
-
+    """Return a rule-based finding without invoking the legacy V2 model."""
+    finding["ml_prediction"] = None
+    finding["ml_model_prediction"] = None
+    finding["ml_enabled"] = False
+    finding["ml_agrees"] = None
     return finding
 
 
