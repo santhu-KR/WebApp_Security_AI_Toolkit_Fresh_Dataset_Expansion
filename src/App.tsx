@@ -205,7 +205,12 @@ function App(){
 
 
  function saveScanHistory(scanFiles:ProjectFile[],scanFindings:Finding[]){
-  const score=Math.max(0,Math.min(100,100-scanFindings.reduce((sum,f)=>sum+({Critical:25,High:15,Normal:8,Low:3}[f.severity]||0),0));
+  const deductions: Record<string, number> = { Critical: 25, High: 15, Normal: 8, Low: 3 };
+  const totalDeduction = scanFindings.reduce(
+    (sum, f) => sum + (deductions[f.severity] || 0),
+    0
+  );
+  const score = Math.max(0, Math.min(100, 100 - totalDeduction));
   const entry={id:crypto.randomUUID(),date:new Date().toISOString(),project:scanFiles.length?scanFiles[0].path.split("/")[0]||"Uploaded project":"Project scan",files:scanFiles.length,total:scanFindings.length,critical:scanFindings.filter(f=>f.severity==="Critical").length,high:scanFindings.filter(f=>f.severity==="High").length,medium:scanFindings.filter(f=>f.severity==="Normal").length,low:scanFindings.filter(f=>f.severity==="Low").length,score};
   setScanHistory(old=>{const next=[entry,...old].slice(0,25);localStorage.setItem("sentinel_scan_history",JSON.stringify(next));return next;});
  }
