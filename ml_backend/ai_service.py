@@ -10,6 +10,7 @@ import os
 import json
 import urllib.request
 import urllib.error
+import time
 from pathlib import Path
 
 
@@ -76,351 +77,161 @@ def gemini_generate(
     system_instruction=None,
     model=None
 ):
-
-    # -----------------------------------------------------
-    # API KEY VALIDATION
-    # -----------------------------------------------------
+    """Call Gemini with retries and model fallback for temporary/API model failures."""
 
     if not GEMINI_API_KEY or GEMINI_API_KEY.lower().startswith(("put_your", "replace_", "your_")):
-
         raise RuntimeError(
             "GEMINI_API_KEY is missing or is still a placeholder. "
             "Configure a real key in ml_backend/.env and restart the backend."
         )
 
+    primary_model = (model or GEMINI_CHAT_MODEL or GEMINI_MODEL).strip()
+    if primary_model.startswith("models/"):
+        primary_model = primary_model.removeprefix("models/")
 
-    # -----------------------------------------------------
-    # SELECT MODEL
-    # -----------------------------------------------------
-
-    model_name = model or GEMINI_MODEL
-
-    model_name = model_name.strip()
-
-    if model_name.startswith("models/"):
-
-        model_name = model_name.replace(
-            "models/",
-            "",
-            1
-        )
-
-
-    # -----------------------------------------------------
-    # API URL
-    # -----------------------------------------------------
-
-    url = (
-        "https://generativelanguage.googleapis.com/"
-        "v1beta/models/"
-        + model_name
-        + ":generateContent"
+    # Fallback models can be customized in ml_backend/.env:
+    # GEMINI_FALLBACK_MODELS=gemini-model-1,gemini-model-2
+    fallback_setting = os.getenv(
+        "GEMINI_FALLBACK_MODELS",
+        DEFAULT_MODEL
     )
+    fallback_models = [
+        item.strip().removeprefix("models/")
+        for item in fallback_setting.split(",")
+        if item.strip()
+    ]
 
-
-    # -----------------------------------------------------
-    # REQUEST BODY
-    # -----------------------------------------------------
+    model_candidates = []
+    for candidate in [primary_model, *fallback_models]:
+        if candidate and candidate not in model_candidates:
+            model_candidates.append(candidate)
 
     body = {
-
-        "contents": [
-
-            {
-                "role": "user",
-
-                "parts": [
-
-                    {
-                        "text": str(prompt)
-                    }
-
-                ]
-            }
-
-        ],
-
-        "generationConfig": {
-
-            "temperature": 0.2,
-
-            "maxOutputTokens": 8192
-
-        }
-
+        "contents": [{"role": "user", "parts": [{"text": str(prompt)}]}],
+        "generationConfig": {"temperature": 0.2, "maxOutputTokens": 8192}
     }
-
-
-    # -----------------------------------------------------
-    # SYSTEM INSTRUCTION
-    # -----------------------------------------------------
-
     if system_instruction:
+        body["systemInstruction"] = {"parts": [{"text": str(system_instruction)}]}
 
-        body["systemInstruction"] = {
+    request_data = json.dumps(body).encode("utf-8")
+    retryable_statuses = {429, 500, 502, 503, 504}
+    last_error = None
 
-            "parts": [
+    for model_name in model_candidates:
+        url = (
+            "https://generativelanguage.googleapis.com/"
+            "v1beta/models/" + model_name + ":generateContent"
+        )
 
-                {
-                    "text": str(system_instruction)
-                }
+        # Retry temporary errors with exponential backoff: 1s, 2s, 4s.
+        for attempt in range(3):
+            req = urllib.request.Request(
+                url,
+                data=request_data,
+                headers={
+                    "Content-Type": "application/json",
+                    "x-goog-api-key": GEMINI_API_KEY,
+                    "User-Agent": "WebApp-Security-AI-Toolkit"
+                },
+                method="POST"
+            )
 
-            ]
+            try:
+                with urllib.request.urlopen(req, timeout=90) as response:
+                    data = json.loads(response.read().decode("utf-8"))
 
-        }
+                candidates = data.get("candidates", [])
+                if not candidates:
+                    last_error = RuntimeError(
+                        "Gemini returned an empty response from model "
+                        + model_name
+                    )
+                    break
 
+                parts = candidates[0].get("content", {}).get("parts", [])
+                answer = "".join(part.get("text", "") for part in parts).strip()
+                if not answer:
+                    last_error = RuntimeError(
+                        "Gemini returned no text response from model "
+                        + model_name
+                    )
+                    break
 
-    # -----------------------------------------------------
-    # BUILD REQUEST
-    # -----------------------------------------------------
+                if model_name != primary_model:
+                    print("[INFO] Gemini fallback model succeeded: " + model_name)
+                return answer
 
-    request_data = json.dumps(
-        body
-    ).encode("utf-8")
+            except urllib.error.HTTPError as exc:
+                try:
+                    error_data = json.loads(exc.read().decode("utf-8"))
+                    error_message = error_data.get("error", {}).get("message", "")
+                except Exception:
+                    error_message = str(exc)
 
+                if exc.code in (401, 403):
+                    raise RuntimeError(
+                        "Gemini API authentication failed. Check your API key and permissions."
+                    ) from exc
 
-    req = urllib.request.Request(
+                if exc.code == 400:
+                    raise RuntimeError(
+                        "Gemini rejected the request: " + str(error_message)
+                    ) from exc
 
-        url,
+                if exc.code == 404:
+                    last_error = RuntimeError(
+                        "Gemini model unavailable: " + model_name + ". " + str(error_message)
+                    )
+                    print("[WARNING] Model unavailable; trying next fallback: " + model_name)
+                    break
 
-        data=request_data,
+                if exc.code in retryable_statuses:
+                    last_error = RuntimeError(
+                        "Gemini API error " + str(exc.code) + ": " + str(error_message)
+                    )
+                    if attempt < 2:
+                        wait_seconds = 2 ** attempt
+                        print(
+                            "[WARNING] Gemini " + str(exc.code)
+                            + " on " + model_name
+                            + "; retrying in " + str(wait_seconds) + " seconds."
+                        )
+                        time.sleep(wait_seconds)
+                        continue
+                    print("[WARNING] Retries exhausted for model: " + model_name)
+                    break
 
-        headers={
+                raise RuntimeError(
+                    "Gemini API error " + str(exc.code) + ": " + str(error_message)
+                ) from exc
 
-            "Content-Type": "application/json",
+            except urllib.error.URLError as exc:
+                last_error = RuntimeError(
+                    "Cannot connect to Gemini API. Check your internet connection. "
+                    + str(exc.reason)
+                )
+                if attempt < 2:
+                    time.sleep(2 ** attempt)
+                    continue
+                break
 
-            "x-goog-api-key": GEMINI_API_KEY,
+            except TimeoutError:
+                last_error = RuntimeError(
+                    "Gemini request timed out for model " + model_name
+                )
+                if attempt < 2:
+                    time.sleep(2 ** attempt)
+                    continue
+                break
 
-            "User-Agent": "WebApp-Security-AI-Toolkit"
+            except json.JSONDecodeError as exc:
+                raise RuntimeError("Gemini returned an invalid response.") from exc
 
-        },
-
-        method="POST"
-
+    raise RuntimeError(
+        "Gemini AI is temporarily unavailable. The primary model and fallback "
+        "models failed. Please try again in a minute. Details: "
+        + str(last_error or "Unknown error")
     )
-
-
-    # -----------------------------------------------------
-    # SEND REQUEST
-    # -----------------------------------------------------
-
-    try:
-
-        with urllib.request.urlopen(
-            req,
-            timeout=90
-        ) as response:
-
-            response_data = response.read().decode(
-                "utf-8"
-            )
-
-            data = json.loads(
-                response_data
-            )
-
-
-        # -------------------------------------------------
-        # EXTRACT RESPONSE
-        # -------------------------------------------------
-
-        candidates = data.get(
-            "candidates",
-            []
-        )
-
-
-        if not candidates:
-
-            raise RuntimeError(
-                "Gemini returned an empty response. "
-                "Check model availability and API quota."
-            )
-
-
-        candidate = candidates[0]
-
-
-        content = candidate.get(
-            "content",
-            {}
-        )
-
-
-        parts = content.get(
-            "parts",
-            []
-        )
-
-
-        answer = "".join(
-
-            part.get(
-                "text",
-                ""
-            )
-
-            for part in parts
-
-        ).strip()
-
-
-        if not answer:
-
-            raise RuntimeError(
-                "Gemini returned no text response."
-            )
-
-
-        return answer
-
-
-    # =====================================================
-    # HTTP ERRORS
-    # =====================================================
-
-    except urllib.error.HTTPError as exc:
-
-        try:
-
-            error_body = exc.read().decode(
-                "utf-8"
-            )
-
-            error_data = json.loads(
-                error_body
-            )
-
-            error_message = (
-                error_data
-                .get("error", {})
-                .get("message", error_body)
-            )
-
-        except Exception:
-
-            error_message = str(exc)
-
-
-        # -------------------------------------------------
-        # 400
-        # -------------------------------------------------
-
-        if exc.code == 400:
-
-            raise RuntimeError(
-                "Gemini rejected the request: "
-                + str(error_message)
-            )
-
-
-        # -------------------------------------------------
-        # 401 / 403
-        # -------------------------------------------------
-
-        elif exc.code in (401, 403):
-
-            raise RuntimeError(
-                "Gemini API authentication failed. "
-                "Check your API key and permissions."
-            )
-
-
-        # -------------------------------------------------
-        # 404 MODEL NOT FOUND
-        # -------------------------------------------------
-
-        elif exc.code == 404:
-
-            # Retry with the project default model when the configured
-            # model is unavailable (for example, an old model in .env).
-            if model_name != DEFAULT_MODEL:
-                print(
-                    "[WARNING] Gemini model "
-                    + model_name
-                    + " unavailable. Retrying with "
-                    + DEFAULT_MODEL
-                )
-                return gemini_generate(
-                    prompt=prompt,
-                    system_instruction=system_instruction,
-                    model=DEFAULT_MODEL
-                )
-
-            raise RuntimeError(
-                "Gemini model not found: "
-                + model_name
-                + ". Check model availability and API-key access. "
-                + "Original error: "
-                + str(error_message)
-            )
-
-        # -------------------------------------------------
-        # 429 QUOTA
-        # -------------------------------------------------
-
-        elif exc.code == 429:
-
-            raise RuntimeError(
-
-                "Gemini API quota or rate limit exceeded. "
-                "Wait and try again. "
-                + str(error_message)
-
-            )
-
-
-        # -------------------------------------------------
-        # OTHER HTTP ERRORS
-        # -------------------------------------------------
-
-        else:
-
-            raise RuntimeError(
-
-                "Gemini API error "
-                + str(exc.code)
-                + ": "
-                + str(error_message)
-
-            )
-
-
-    # =====================================================
-    # NETWORK ERRORS
-    # =====================================================
-
-    except urllib.error.URLError as exc:
-
-        raise RuntimeError(
-
-            "Cannot connect to Gemini API. "
-            "Check your internet connection. "
-            + str(exc.reason)
-
-        )
-
-
-    # =====================================================
-    # TIMEOUT
-    # =====================================================
-
-    except TimeoutError:
-
-        raise RuntimeError(
-            "Gemini request timed out. Please try again."
-        )
-
-
-    # =====================================================
-    # JSON ERRORS
-    # =====================================================
-
-    except json.JSONDecodeError:
-
-        raise RuntimeError(
-            "Gemini returned an invalid response."
-        )
 
 
 # =========================================================
