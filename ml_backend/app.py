@@ -18,9 +18,11 @@ from urllib.parse import urlparse
 from flask import Flask, jsonify, request, g
 from flask_cors import CORS
 
+# Load ml_backend/.env explicitly and allow it to override stale shell variables.
+HERE = Path(__file__).resolve().parent
 try:
     from dotenv import load_dotenv
-    load_dotenv(Path(__file__).resolve().parent / ".env")
+    load_dotenv(HERE / ".env", override=True)
 except Exception:
     pass
 
@@ -41,7 +43,6 @@ else:
 # =========================================================
 # CONFIGURATION
 # =========================================================
-HERE = Path(__file__).resolve().parent
 V10_MODEL_DIR = HERE / "models" / "v10"
 AUTH_DB = HERE / "users.sqlite3"
 SCAN_DB = HERE / "scan_history.db"
@@ -596,7 +597,6 @@ def validate_local_target(target_url):
 
 
 def get_findings_from_result(results):
-    """Best-effort extraction for scanner outputs with common structures."""
     if isinstance(results, list):
         return results
 
@@ -789,74 +789,131 @@ def delete_scan_history():
     return jsonify({"success": True, "message": "Scan history cleared."})
 
 
-
-
 # =========================================================
-# SERVER-SIDE AI EXPLANATION AND CHAT (API KEY NEVER SENT TO UI)
+# AI SERVICE IMPORT
 # =========================================================
 try:
-    from ai_service import gemini_generate
+    from ai_service import (
+        gemini_generate,
+        gemini_chat,
+        get_ai_status as ai_service_status,
+        GEMINI_MODEL,
+        GEMINI_CHAT_MODEL,
+        GEMINI_API_KEY,
+    )
     AI_SERVICE_ERROR = None
 except Exception as exc:
     gemini_generate = None
+    gemini_chat = None
+    ai_service_status = None
+    GEMINI_MODEL = None
+    GEMINI_CHAT_MODEL = None
+    GEMINI_API_KEY = ""
     AI_SERVICE_ERROR = str(exc)
 
+
+# =========================================================
+# AI STATUS
+# =========================================================
 @app.get("/api/ai/status")
 def ai_status():
-    return jsonify({
-        "available": bool(gemini_generate and os.environ.get("GEMINI_API_KEY")),
-        "model": os.environ.get("GEMINI_MODEL", "gemini-3.0-flash"),
-        "message": "AI service ready." if gemini_generate and os.environ.get("GEMINI_API_KEY") else "Configure GEMINI_API_KEY in the backend environment."
-    })
+    if ai_service_status:
+        status = ai_service_status()
+        status["available"] = bool(gemini_generate and GEMINI_API_KEY)
+        status["model"] = GEMINI_CHAT_MODEL or status.get("model")
+        status["explanation_model"] = GEMINI_MODEL
+        if not status["available"]:
+            status["message"] = "Configure GEMINI_API_KEY in ml_backend/.env"
+        return jsonify(status)
 
+    return jsonify({
+        "available": False,
+        "message": "AI service module unavailable: " + str(AI_SERVICE_ERROR),
+        "model": None
+    }), 503
+
+
+# =========================================================
+# AI EXPLAIN
+# =========================================================
 @app.post("/api/ai/explain")
 @require_auth
 def ai_explain():
     if not gemini_generate:
-        return jsonify({"error": "AI service module unavailable: " + str(AI_SERVICE_ERROR)}), 503
+        return jsonify({
+            "error": "AI service module unavailable: " + str(AI_SERVICE_ERROR)
+        }), 503
+
     payload = request.get_json(silent=True) or {}
     finding = payload.get("finding", {})
     code_context = str(payload.get("codeContext", ""))[:20000]
+
     if not isinstance(finding, dict) or not finding:
         return jsonify({"error": "Provide a finding object."}), 400
+
     prompt = (
         "Analyze this defensive code-security finding using the supplied code context. "
         "Do not assume it is confirmed based only on a rule match. Clearly state whether evidence is "
         "confirmed, likely, or insufficient. Explain in simple English, include cause, impact, "
         "evidence, safe remediation, and a small secure code example if relevant. Do not provide "
-        "exploit payloads or attack instructions.\n\nFINDING:\n" + json.dumps(finding, ensure_ascii=False) +
-        "\n\nSOURCE CONTEXT:\n" + code_context
+        "exploit payloads or attack instructions.\n\nFINDING:\n"
+        + json.dumps(finding, ensure_ascii=False)
+        + "\n\nSOURCE CONTEXT:\n" + code_context
     )
+
+    system = (
+        "You are a defensive application security analyst. Be accurate, contextual, "
+        "and avoid overstating scanner evidence."
+    )
+
     try:
-        answer = gemini_generate(prompt, "You are a defensive application security analyst. Be accurate, contextual, and avoid overstating scanner evidence.")
-        return jsonify({"answer": answer, "model": os.environ.get("GEMINI_MODEL", "gemini-3.0-flash")})
+        answer = gemini_generate(prompt, system)
+        return jsonify({
+            "answer": answer,
+            "model": GEMINI_MODEL
+        })
     except Exception as exc:
         return jsonify({"error": str(exc)}), 502
 
+
+# =========================================================
+# AI CHAT
+# =========================================================
 @app.post("/api/ai/chat")
 @require_auth
 def ai_chat():
-    if not gemini_generate:
-        return jsonify({"error": "AI service module unavailable: " + str(AI_SERVICE_ERROR)}), 503
+    if not gemini_chat:
+        return jsonify({
+            "error": "AI service module unavailable: " + str(AI_SERVICE_ERROR)
+        }), 503
+
     payload = request.get_json(silent=True) or {}
     prompt = str(payload.get("prompt", "")).strip()[:6000]
     file_path = str(payload.get("filePath", ""))[:500]
     file_content = str(payload.get("fileContent", ""))[:30000]
     findings = payload.get("findings", [])
     history = payload.get("history", [])
+
     if not prompt:
         return jsonify({"error": "Prompt cannot be empty."}), 400
-    if not isinstance(findings, list): findings = []
-    if not isinstance(history, list): history = []
+    if not isinstance(findings, list):
+        findings = []
+    if not isinstance(history, list):
+        history = []
+
     safe_history = []
     for item in history[-8:]:
         if isinstance(item, dict) and item.get("role") in ("user", "model"):
-            safe_history.append(str(item.get("text", ""))[:3000])
+            safe_history.append(
+                f"{item.get('role')}: {str(item.get('text', ''))[:3000]}"
+            )
+
     context = (
         "Selected file: " + file_path + "\n\nSOURCE FILE:\n" + file_content +
         "\n\nFINDINGS FOR THIS FILE:\n" + json.dumps(findings[:50], ensure_ascii=False) +
         "\n\nRECENT CHAT:\n" + "\n".join(safe_history)
     )
+
     system = (
         "You are a defensive application-security assistant helping review an authorized source-code project. "
         "Answer questions using the selected file and findings context. Be honest if evidence is insufficient. "
@@ -864,14 +921,19 @@ def ai_chat():
         "never omit sections or use ellipses. Avoid exploit payloads, credential theft, destructive actions, "
         "or offensive instructions. For ordinary questions, do not force code output."
     )
+
     try:
-        answer = gemini_generate(context + "\n\nUSER QUESTION:\n" + prompt, system, model=os.environ.get("GEMINI_CHAT_MODEL", "gemini-3.0-flash"))
-        return jsonify({"answer": answer, "model": os.environ.get("GEMINI_CHAT_MODEL", "gemini-3.0-flash")})
+        answer = gemini_chat(context + "\n\nUSER QUESTION:\n" + prompt, system)
+        return jsonify({
+            "answer": answer,
+            "model": GEMINI_CHAT_MODEL
+        })
     except Exception as exc:
         return jsonify({"error": str(exc)}), 502
 
+
 # =========================================================
-# RUN SERVER - KEEP THIS AT THE VERY END
+# RUN SERVER
 # =========================================================
 if __name__ == "__main__":
     app.run(

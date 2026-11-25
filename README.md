@@ -24,7 +24,7 @@ Build: `npm run build`
 - Exact 1-based line locations with five-line code context.
 - Static rule engine + Shannon entropy and sink-weighted feature scorer.
 - Passive security header and cookie-flag inspection.
-- Structured Gemini finding verification (`gemini-2.5-flash`).
+- Structured Gemini finding verification (`gemini-3.8-flash`).
 - Gemini full-file remediation chat (`gemini-2.5-pro`) with code extraction and snapshots.
 - Search/filter findings, dashboard charts, Markdown report, patched ZIP.
 
