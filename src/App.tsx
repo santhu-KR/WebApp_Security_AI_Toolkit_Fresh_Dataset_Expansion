@@ -110,6 +110,10 @@ function App(){
  const [githubBusy,setGithubBusy]=useState(false);
 
  const [signedInEmail,setSignedInEmail]=useState("");
+ const [scanHistory,setScanHistory]=useState<any[]>(()=>{try{return JSON.parse(localStorage.getItem("sentinel_scan_history")||"[]");}catch{return []; }});
+ const securityScore=useMemo(()=>Math.max(0,Math.min(100,100-findings.reduce((sum,f)=>sum+({Critical:25,High:15,Normal:8,Low:3}[f.severity]||0),0)),[findings]);
+ const scoreLabel=securityScore>=90?"Excellent":securityScore>=75?"Good":securityScore>=50?"Needs Improvement":"At Risk";
+
 
  const API="http://127.0.0.1:5001";
 
@@ -187,6 +191,13 @@ function App(){
 
 
 
+
+ function saveScanHistory(scanFiles:ProjectFile[],scanFindings:Finding[]){
+  const score=Math.max(0,Math.min(100,100-scanFindings.reduce((sum,f)=>sum+({Critical:25,High:15,Normal:8,Low:3}[f.severity]||0),0));
+  const entry={id:crypto.randomUUID(),date:new Date().toISOString(),project:scanFiles.length?scanFiles[0].path.split("/")[0]||"Uploaded project":"Project scan",files:scanFiles.length,total:scanFindings.length,critical:scanFindings.filter(f=>f.severity==="Critical").length,high:scanFindings.filter(f=>f.severity==="High").length,medium:scanFindings.filter(f=>f.severity==="Normal").length,low:scanFindings.filter(f=>f.severity==="Low").length,score};
+  setScanHistory(old=>{const next=[entry,...old].slice(0,25);localStorage.setItem("sentinel_scan_history",JSON.stringify(next));return next;});
+ }
+
  async function loadFiles(next:ProjectFile[]){
 
   const ignoredFolders = ["node_modules", ".git", "dist", "build"];
@@ -200,7 +211,7 @@ function App(){
 
   const results=scanProject(filtered);
 
-  setFindings(results);setPatchedFiles(new Set());setSelected(results[0]||null);setActiveFile(filtered[0]?.path||"");
+  setFindings(results);setPatchedFiles(new Set());setSelected(results[0]||null);setActiveFile(filtered[0]?.path||"");saveScanHistory(filtered,results);
 
   setBanner(`Loaded ${filtered.length} source file(s). ${results.length} static candidate(s) identified. Scoring with trained ML model…`);
 
@@ -455,6 +466,14 @@ function App(){
     {tab==="dashboard"&&<section className="space-y-6">
 
      <div className="flex flex-wrap items-end justify-between gap-3"><div><h1 className="text-2xl font-bold text-white">Security Overview</h1><p className="text-sm text-slate-500 mt-1">Project posture and prioritized code-level risks.</p><p className={`text-[11px] mt-2 ${mlStatus.available?"text-emerald-400":"text-amber-400"}`}>● {mlStatus.available?`${mlStatus.algorithm} · ${mlStatus.datasetRows??"?"} training examples`:"Trained ML service offline — static rules remain available"}</p></div><div className="flex gap-2"><button className="btn" onClick={downloadReport}><Download size={14}/> Export report</button><button className="btn btn-primary" onClick={runVerification} disabled={busy||!findings.length}><Sparkles size={14}/> {busy?"Analyzing…":"Verify with Gemini"}</button></div></div>
+
+
+     <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+      <div className="panel p-5"><div className="text-xs text-slate-500">Security Score</div><div className="flex items-end gap-2 mt-2"><span className="text-4xl font-bold text-white">{securityScore}</span><span className="text-sm text-slate-500">/100</span></div><div className="mt-3 h-2 rounded-full bg-slate-800 overflow-hidden"><div className="h-full rounded-full bg-emerald-500 transition-all" style={{width:securityScore+"%"}}/></div><div className="mt-2 text-xs text-emerald-300">{files.length?scoreLabel:"No scan yet"}</div><p className="text-[10px] text-slate-600 mt-1">Critical −25 · High −15 · Medium −8 · Low −3</p></div>
+      <div className="panel p-5"><div className="text-xs text-slate-500">Latest Scan</div><div className="text-2xl font-bold text-white mt-2">{scanHistory.length?new Date(scanHistory[0].date).toLocaleString():"No history"}</div><div className="text-xs text-slate-400 mt-2">{scanHistory.length?scanHistory[0].files+" files · "+scanHistory[0].total+" findings":"Scan a project to create history"}</div></div>
+      <div className="panel p-5"><div className="text-xs text-slate-500">Scan Comparison</div>{scanHistory.length>1?(()=>{const latest=scanHistory[0],prev=scanHistory[1],delta=latest.total-prev.total,scoreDelta=latest.score-prev.score;return <><div className={"text-2xl font-bold mt-2 "+(delta<0?"text-emerald-300":delta>0?"text-rose-300":"text-slate-200")}>{delta>0?"+":""}{delta} findings</div><div className="text-xs mt-2 text-slate-400">vs previous scan · score {scoreDelta>0?"+":""}{scoreDelta}</div><div className="text-[10px] mt-1">{delta<0?"Improvement detected":delta>0?"More findings detected":"No finding-count change"}</div></>:<div className="text-xs text-slate-400 mt-3">Run at least two scans to compare.</div>}</div>
+     </div>
+     <div className="panel p-5"><div className="flex items-center justify-between mb-4"><h2 className="font-semibold text-white text-sm">Persistent Scan History</h2><span className="text-[10px] text-slate-500">Saved in this browser · latest 25</span></div>{scanHistory.length?<div className="overflow-x-auto"><table className="w-full text-left text-xs"><thead className="text-[10px] uppercase text-slate-500 border-b border-slate-800"><tr><th className="py-2 pr-3">Date</th><th className="py-2 pr-3">Project</th><th className="py-2 pr-3">Files</th><th className="py-2 pr-3">Findings</th><th className="py-2 pr-3">Severity (C/H/M/L)</th><th>Score</th></tr></thead><tbody className="divide-y divide-slate-800">{scanHistory.map((h:any)=><tr key={h.id}><td className="py-3 pr-3 text-slate-400">{new Date(h.date).toLocaleString()}</td><td className="py-3 pr-3 text-slate-200">{h.project}</td><td className="py-3 pr-3">{h.files}</td><td className="py-3 pr-3">{h.total}</td><td className="py-3 pr-3"><span className="text-rose-300">{h.critical}</span>/<span className="text-orange-300">{h.high}</span>/<span className="text-amber-300">{h.medium}</span>/<span className="text-cyan-300">{h.low}</span></td><td><span className="text-emerald-300 font-semibold">{h.score}/100</span></td></tr>)}</tbody></table><button className="btn mt-3" onClick={()=>{setScanHistory([]);localStorage.removeItem("sentinel_scan_history");setBanner("Scan history cleared.");}}>Clear history</button></div>:<Empty text="Scan a project to start your persistent history."/></div>
 
      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">{[{label:"Files Scanned",value:files.length,icon:FileCode2,color:"text-cyan-400"},{label:"Total Findings",value:findings.length,icon:AlertTriangle,color:"text-amber-400"},{label:"Critical & High",value:findings.filter(f=>f.severity==="Critical"||f.severity==="High").length,icon:ShieldCheck,color:"text-red-400"},{label:"Patched Files",value:patchedFiles.size,icon:CheckCircle2,color:"text-emerald-400"}].map(k=><div className="panel p-5" key={k.label}><div className="flex justify-between"><span className="text-xs text-slate-500">{k.label}</span><k.icon size={17} className={k.color}/></div><div className="text-3xl font-bold text-white mt-3">{fmt(k.value)}</div><div className="text-[10px] text-slate-600 mt-2">CURRENT PROJECT SESSION</div></div>)}</div>
 
